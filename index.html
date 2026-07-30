@@ -3,13 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Universal Workspace V-1</title>
+    <title>Universal Workspace V-1 & V-2</title>
     <link rel="stylesheet" href="styles.css">
-    <!-- ChartJS for visual budget graphs -->
     <script src="https://jsdelivr.net"></script>
-    <!-- SheetJS for local Excel data parsing and compilation extraction -->
     <script src="https://jsdelivr.net"></script>
-    <!-- jsPDF for local vector PDF rendering frameworks -->
     <script src="https://cloudflare.com"></script>
 </head>
 <body>
@@ -22,6 +19,12 @@
                 <li><a href="#" data-target="ambient-sounds">Ambient Sounds</a></li>
                 <li><a href="#" data-target="email-drafter">Smart Email Drafter</a></li>
                 <li><a href="#" data-target="invoice-gen">Invoice Generator</a></li>
+            </ul>
+            <h2 style="margin-top: 20px; border-top: 1px solid #3b82f6; padding-top: 10px;">Developer V-2</h2>
+            <ul>
+                <li><a href="#" data-target="api-tester">API Tester</a></li>
+                <li><a href="#" data-target="json-viewer">JSON Viewer</a></li>
+                <li><a href="#" data-target="regex-tester">Regex Tester</a></li>
             </ul>
         </nav>
         <main class="content-area">
@@ -103,7 +106,7 @@
                                 <option value="urgent">Urgent / Follow-Up</option>
                             </select>
                         </div>
-                        <textarea id="email-prompt" placeholder="What is this email about? (e.g., Requesting extension for deadline, project submission updates)" rows="4" style="width:100%; padding:12px; border-radius:6px; border:1px solid #ddd;" required></textarea>
+                        <textarea id="email-prompt" placeholder="What is this email about?" rows="4" style="width:100%; padding:12px; border-radius:6px; border:1px solid #ddd;" required></textarea>
                         <button class="btn-primary" onclick="generateEmailDraft()" style="margin-top:10px;">Compile Draft Text</button>
                     </div>
                     <div class="card display-card">
@@ -121,7 +124,7 @@
                     <div class="card form-card">
                         <h3>Invoice Particulars</h3>
                         <input type="text" id="inv-client" placeholder="Client Name / Company" required style="margin-bottom:10px;">
-                        <input type="text" id="inv-service" placeholder="Service Provided (e.g., Web Development)" required style="margin-bottom:10px;">
+                        <input type="text" id="inv-service" placeholder="Service Provided" required style="margin-bottom:10px;">
                         <div class="row">
                             <input type="number" id="inv-cost" placeholder="Total Cost Basis Amount" required>
                             <select id="inv-currency">
@@ -144,8 +147,24 @@
                     </div>
                 </div>
             </section>
-        </main>
-    </div>
-    <script src="app.js"></script>
-</body>
-</html>
+
+            <!-- API Tester Panel (V-2 Placeholder) -->
+            <section id="api-tester" class="panel">
+                <header class="panel-header"><h1>API HTTP Request Tester</h1></header>
+                <div class="tracker-grid">
+                    <div class="card form-card">
+                        <h3>Configure Endpoint Request</h3>
+                        <div class="row">
+                            <select id="api-method" style="max-width:30%;"><option value="GET">GET</option><option value="POST">POST</option></select>
+                            <input type="text" id="api-url" placeholder="https://github.com" style="flex:1;">
+                        </div>
+                        <button class="btn-primary" onclick="runApiTest()">Send Network Request</button>
+                    </div>
+                    <div class="card display-card">
+                        <h3>API Response Output Data</h3>
+                        <textarea id="api-response" readonly rows="8" style="width:100%; margin-top:10px; font-family:monospace; background:#f8fafc; padding:12px; border-radius:6px; border:1px solid #ddd; resize:none;"></textarea>
+                    </div>
+                </div>
+            </section>
+
+            <!-- JSON Viewer Panel (V-2 Placeholder) -->
