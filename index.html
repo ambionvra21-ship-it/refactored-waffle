@@ -535,11 +535,37 @@ if len(matches) > 1:
 else:
     print("Direct section tag match hidden. Running alternative structural grid cleanup routine...")
     # Fallback cleanup to clear secondary identical layout components cleanly
-    split_marker = '<div id="expense-app" class="app-section active">'
-    parts = code.split(split_marker)
-    if len(parts) > 2:
-        # Re-stitch by discarding the middle redundant block
-        fixed_code = parts[0] + split_marker + parts[1] + parts[2]
-        with open("index.html", "w", encoding="utf-8") as f:
-            f.write(fixed_code)
-        print("✓ Layer grid re-stitched successfully!")
+    split_marker = '
+
+<script>
+    function switchTab(targetId) {
+        document.querySelectorAll('.app-section').forEach(section => section.classList.remove('active'));
+        document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+        const activeApp = document.getElementById(targetId);
+        if(activeApp) activeApp.classList.add('active');
+        if(event && event.target) event.target.classList.add('active');
+    }
+    
+    function validatePortalAccess() {
+        const inputPass = document.getElementById('sys-pass-input').value;
+        if (inputPass === "1245") {
+            document.getElementById('lock-screen').style.display = 'none';
+            sessionStorage.setItem('portal_authorized', 'true');
+        } else {
+            document.getElementById('lock-error-msg').style.display = 'block';
+        }
+    }
+    
+    if (sessionStorage.getItem('portal_authorized') === 'true') {
+        window.addEventListener('DOMContentLoaded', () => {
+            const lock = document.getElementById('lock-screen');
+            if(lock) lock.style.display = 'none';
+        });
+    }
+    
+    function setTheme(themeName) { document.body.className = themeName; localStorage.setItem('portal_theme', themeName); }
+    window.addEventListener('DOMContentLoaded', () => { document.body.className = localStorage.getItem('portal_theme') || 'theme-slate'; });
+</script>
+
+</body>
+</html>
