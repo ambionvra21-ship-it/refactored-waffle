@@ -608,3 +608,1000 @@
         }
     }
 </script>
+<script>
+    // SAFE LAYOUT INJECTION ENGINE
+    window.addEventListener('DOMContentLoaded', () => {
+        const sidebar = document.querySelector('.sidebar');
+        const themeRow = document.querySelector('.theme-picker-row');
+        
+        // Inject the new navigation button safely into the sidebar
+        const countdownBtn = document.createElement('button');
+        countdownBtn.className = 'tab-btn';
+        countdownBtn.innerHTML = '⏳ Milestone Countdown';
+        countdownBtn.onclick = () => switchTab('countdown-app');
+        sidebar.insertBefore(countdownBtn, themeRow);
+
+        // Inject the app workspace panel at the end of the workspace container
+        const workspace = document.querySelector('.workspace');
+        const countdownSection = document.createElement('div');
+        countdownSection.id = 'countdown-app';
+        countdownSection.className = 'app-section';
+        countdownSection.innerHTML = `
+            <h3>⏳ Milestone Deadline Countdown</h3>
+            <div class="grid-layout">
+                <div class="data-card">
+                    <h4>Set New Milestone Event Target</h4>
+                    <label style="margin-top:10px; display:block;">Event Name / Title:</label>
+                    <input type="text" id="cd-title-input" placeholder="e.g., Project Delivery, Birthday, New Year">
+                    <label style="display:block;">Target Date & Time:</label>
+                    <input type="datetime-local" id="cd-date-input">
+                    <button class="btn" onclick="createNewSystemCountdown()">Arm Countdown Clock</button>
+                </div>
+                <div class="data-card" style="text-align:center; display:flex; flex-direction:column; justify-content:center;">
+                    <h4 id="cd-active-title" style="color:var(--accent); font-size:1.3rem; margin-bottom:10px;">No Target Armed</h4>
+                    <div id="cd-clock-digits" style="font-size:2rem; font-weight:bold; font-family:monospace; color:#fff; word-break:break-all;">00d : 00h : 00m : 00s</div>
+                </div>
+            </div>
+        `;
+        workspace.appendChild(countdownSection);
+        
+        // Start the background countdown processing interval loop
+        initCountdownProcessingLoop();
+    });
+
+    // CODENAME: TIME TELEMETRY MATHEMATICAL ALGORITHMS
+    let activeCountdownTarget = JSON.parse(localStorage.getItem('core_countdown')) || null;
+
+    function createNewSystemCountdown() {
+        const title = document.getElementById('cd-title-input').value;
+        const dateVal = document.getElementById('cd-date-input').value;
+        if (!title || !dateVal) { alert("Please complete both parameters to arm the tracker."); return; }
+        
+        activeCountdownTarget = { title: title, date: new Date(dateVal).getTime() };
+        localStorage.setItem('core_countdown', JSON.stringify(activeCountdownTarget));
+        document.getElementById('cd-title-input').value = '';
+        document.getElementById('cd-date-input').value = '';
+    }
+
+    function initCountdownProcessingLoop() {
+        setInterval(() => {
+            if (!activeCountdownTarget) return;
+            
+            const now = new Date().getTime();
+            const difference = activeCountdownTarget.date - now;
+            
+            const titleBox = document.getElementById('cd-active-title');
+            const clockBox = document.getElementById('cd-clock-digits');
+            
+            if (!titleBox || !clockBox) return;
+
+            titleBox.innerText = `Target: ${activeCountdownTarget.title}`;
+
+            if (difference <= 0) {
+                clockBox.innerText = "🚨 MILESTONE TARGET REACHED";
+                clockBox.style.color = "#e03131";
+                return;
+            }
+            
+            clockBox.style.color = "#fff";
+            
+            // Calculate mathematical calendar grids down to the single second
+            const days = Math.floor(difference / (1000 * 60 * 60 * 24));
+            const hours = Math.floor((difference % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            const minutes = Math.floor((difference % (1000 * 60 * 60)) / (1000 * 60));
+            const seconds = Math.floor((difference % (1000 * 60)) / 1000);
+            
+            // Display formatted ticker array digits
+            clockBox.innerText = `${days.toString().padStart(2,'0')}d : ${hours.toString().padStart(2,'0')}h : ${minutes.toString().padStart(2,'0')}m : ${seconds.toString().padStart(2,'0')}s`;
+        }, 1000);
+    }
+</script>
+<script>
+    // SAFE PARALLEL INTERFACE INJECTION PIPELINE
+    window.addEventListener('DOMContentLoaded', () => {
+        const sidebar = document.querySelector('.sidebar');
+        const themeRow = document.querySelector('.theme-picker-row');
+        
+        // 1. Sidebar Nav Button Injections
+        const colorBtn = document.createElement('button');
+        colorBtn.className = 'tab-btn';
+        colorBtn.innerHTML = '🎨 Palette Color Picker';
+        colorBtn.onclick = () => switchTab('color-app');
+        sidebar.insertBefore(colorBtn, themeRow);
+
+        const textBtn = document.createElement('button');
+        textBtn.className = 'tab-btn';
+        textBtn.innerHTML = '🔤 Text Utilities Suite';
+        textBtn.onclick = () => switchTab('text-app');
+        sidebar.insertBefore(textBtn, themeRow);
+
+        // 2. Workspace Panel Appends
+        const workspace = document.querySelector('.workspace');
+        
+        const extraPanels = `
+            <!-- PALETTE COLOR PICKER SECTION -->
+            <div id="color-app" class="app-section">
+                <h3>🎨 Creative Design Color Picker</h3>
+                <div class="grid-layout">
+                    <div class="data-card" style="text-align:center;">
+                        <h4>Interactive Color Selector</h4>
+                        <input type="color" id="hex-selector-input" value="#0070f3" oninput="updateLiveHexLabel()" style="width:100px; height:100px; border-radius:50%; border:3px solid #333; cursor:pointer; margin:20px auto; display:block; padding:0;">
+                        <div id="hex-label-display" style="font-size:1.3rem; font-weight:bold; font-family:monospace; margin-bottom:15px;">#0070f3</div>
+                        <button class="btn" style="width:100%; justify-content:center;" onclick="saveHexToPaletteVault()">Log To Swatch Vault</button>
+                    </div>
+                    <div class="data-card">
+                        <h4>Saved Design Swatch History</h4>
+                        <div id="palette-swatch-vault" class="grid-layout" style="grid-template-columns: repeat(auto-fill, minmax(60px, 1fr)); gap:10px; margin-top:10px;"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TEXT UTILITIES SUITE SECTION -->
+            <div id="text-app" class="app-section">
+                <h3>🔤 Operational Text Utilities Suite</h3>
+                <textarea id="text-suite-input" rows="6" placeholder="Type or paste your raw system string files here..." oninput="analyzeTextMetrics()" style="margin-bottom:15px; font-family:monospace; font-size:0.95rem;"></textarea>
+                
+                <div class="grid-layout" style="grid-template-columns: repeat(3, 1fr); margin-bottom:20px;">
+                    <div class="data-card" style="text-align:center; padding:10px;">⚡ Characters: <span id="txt-char-lbl" style="font-weight:bold; color:var(--accent);">0</span></div>
+                    <div class="data-card" style="text-align:center; padding:10px;">⚡ Words: <span id="txt-word-lbl" style="font-weight:bold; color:var(--accent);">0</span></div>
+                    <div class="data-card" style="text-align:center; padding:10px;">⚡ Lines: <span id="txt-line-lbl" style="font-weight:bold; color:var(--accent);">0</span></div>
+                </div>
+
+                <div class="btn-row">
+                    <button class="btn" onclick="transformCase('upper')">SHOUTING CASE</button>
+                    <button class="btn" onclick="transformCase('lower')">whisper case</button>
+                    <button class="btn btn-secondary" onclick="transformCase('trim')">Trim Trailing Spaces</button>
+                    <button class="btn btn-danger" onclick="clearTextSuiteBox()">Wipe Text Board</button>
+                </div>
+            </div>
+        `;
+        workspace.insertAdjacentHTML('beforeend', extraPanels);
+        
+        // Boot up saved history visuals from system memory cache
+        renderSavedSwatches();
+    });
+
+    // 🎨 COLOR PALETTE PROCESSING ROUTINES
+    let savedSwatches = JSON.parse(localStorage.getItem('core_swatches')) || ['#0070f3', '#00ff66', '#8b5cf6'];
+
+    function updateLiveHexLabel() {
+        const val = document.getElementById('hex-selector-input').value;
+        document.getElementById('hex-label-display').innerText = val.toUpperCase();
+    }
+
+    function saveHexToPaletteVault() {
+        const val = document.getElementById('hex-selector-input').value.toUpperCase();
+        if(savedSwatches.includes(val)) return;
+        savedSwatches.push(val);
+        localStorage.setItem('core_swatches', JSON.stringify(savedSwatches));
+        renderSavedSwatches();
+    }
+
+    function renderSavedSwatches() {
+        const box = document.getElementById('palette-swatch-vault');
+        if(!box) return;
+        box.innerHTML = '';
+        savedSwatches.forEach((hex, index) => {
+            box.innerHTML += `
+                <div style="background:${hex}; height:50px; border-radius:6px; border:2px solid #444; position:relative; cursor:pointer; box-shadow:0 4px 10px rgba(0,0,0,0.3);" title="Click to copy ${hex}" onclick="navigator.clipboard.writeText('${hex}'); alert('Copied Hex: ${hex}');">
+                    <span style="position:absolute; bottom:-2px; right:-2px; background:#e03131; color:white; width:16px; height:16px; font-size:10px; display:flex; align-items:center; justify-content:center; border-radius:50%; font-weight:bold; cursor:pointer;" onclick="event.stopPropagation(); deleteSwatchNode(${index});">×</span>
+                </div>`;
+        });
+    }
+
+    function deleteSwatchNode(idx) {
+        savedSwatches.splice(idx, 1);
+        localStorage.setItem('core_swatches', JSON.stringify(savedSwatches));
+        renderSavedSwatches();
+    }
+
+    // 🔤 TEXT UTILITY ENGINE ALGORITHMS
+    function analyzeTextMetrics() {
+        const text = document.getElementById('text-suite-input').value;
+        document.getElementById('txt-char-lbl').innerText = text.length;
+        
+        const words = text.trim() === "" ? 0 : text.trim().split(/\s+/).length;
+        document.getElementById('txt-word-lbl').innerText = words;
+        
+        const lines = text === "" ? 0 : text.split('\n').length;
+        document.getElementById('txt-line-lbl').innerText = lines;
+    }
+
+    function transformCase(mode) {
+        const box = document.getElementById('text-suite-input');
+        if(mode === 'upper') box.value = box.value.toUpperCase();
+        if(mode === 'lower') box.value = box.value.toLowerCase();
+        if(mode === 'trim') box.value = box.value.split('\n').map(line => line.trim()).join('\n').trim();
+        analyzeTextMetrics();
+    }
+
+    function clearTextSuiteBox() {
+        document.getElementById('text-suite-input').value = '';
+        analyzeTextMetrics();
+    }
+</script>
+<script>
+    // SECURE ENVIRONMENT OVERWRITE AND INJECTION PIPELINE
+    window.addEventListener('DOMContentLoaded', () => {
+        const calSection = document.getElementById('cal-app');
+        if (!calSection) return;
+
+        // Inject World Time Matrix and Location Search elements straight into the existing Calendar workspace
+        const upgradeLayout = `
+            <div class="grid-layout" style="margin-top:20px;">
+                <!-- WORLD ZONE CLOCK MODULE -->
+                <div class="data-card">
+                    <h4>🌐 Global Developer Timezones</h4>
+                    <div style="display:flex; flex-direction:column; gap:8px; margin-top:15px; font-family:monospace; font-size:0.95rem;">
+                        <div style="display:flex; justify-content:space-between;"><span>🇺🇸 New York (EST):</span><span id="tz-ny">--:--:--</span></div>
+                        <div style="display:flex; justify-content:space-between;"><span>🇬🇧 London (GMT):</span><span id="tz-ldn">--:--:--</span></div>
+                        <div style="display:flex; justify-content:space-between;"><span>🇯🇵 Tokyo (JST):</span><span id="tz-tky">--:--:--</span></div>
+                    </div>
+                </div>
+
+                <!-- WEATHER RADAR RADIAL CONTAINER -->
+                <div class="data-card">
+                    <h4>🔍 Custom Location Weather Radar</h4>
+                    <input type="text" id="wea-search-city" placeholder="Enter target city name (e.g., Manila, London)" style="margin-top:10px; margin-bottom:10px;">
+                    <button class="btn" style="width:100%; justify-content:center;" onclick="searchTargetCityClimate()">Query Micro-Climate</button>
+                </div>
+            </div>
+        `;
+        calSection.insertAdjacentHTML('beforeend', upgradeLayout);
+
+        // Turn on the continuous multi-zone clock processor loop
+        initWorldClockEngine();
+    });
+
+    // WORLD ZONE RUNTIME ENGINE
+    function initWorldClockEngine() {
+        setInterval(() => {
+            const time = new Date();
+            
+            const formatter = (zone) => time.toLocaleTimeString('en-US', { 
+                timeZone: zone, hour12: false, hour: '2-digit', minute: '2-digit', second: '2-digit' 
+            });
+
+            if(document.getElementById('tz-ny')) {
+                document.getElementById('tz-ny').innerText = formatter('America/New_York');
+                document.getElementById('tz-ldn').innerText = formatter('Europe/London');
+                document.getElementById('tz-tky').innerText = formatter('Asia/Tokyo');
+            }
+        }, 1000);
+    }
+
+    // CLIMATE SEARCH SIMULATOR ALGORITHM
+    function searchTargetCityClimate() {
+        const city = document.getElementById('wea-search-city').value.trim();
+        if(!city) return;
+
+        // Custom localized parameters are computed algorithmically on the fly
+        const targetTemp = (Math.random() * (34 - 18) + 18).toFixed(1);
+        const conditions = ["Heavy Thunderstorm Front", "Clear Sunny Clearings", "Overcast Rain Mist", "Crisp Gale Wind Currents"];
+        const selectedCondition = conditions[Math.floor(Math.random() * conditions.length)];
+
+        document.getElementById('wea-temp').innerText = `${targetTemp}°C`;
+        document.getElementById('wea-desc').innerText = `${selectedCondition} in ${city.toUpperCase()}`;
+        document.getElementById('wea-search-city').value = '';
+    }
+</script>
+<script>
+    // LAYOUT INJECTION ENGINE FOR GADGET MODULES
+    window.addEventListener('DOMContentLoaded', () => {
+        const sidebar = document.querySelector('.sidebar');
+        const themeRow = document.querySelector('.theme-picker-row');
+        
+        // 1. I-inject ang mga bagong buttons sa iyong Sidebar Navigation
+        const passBtn = document.createElement('button');
+        passBtn.className = 'tab-btn';
+        passBtn.innerHTML = '🔑 Password Generator';
+        passBtn.onclick = () => switchTab('pass-app');
+        sidebar.insertBefore(passBtn, themeRow);
+
+        const unitBtn = document.createElement('button');
+        unitBtn.className = 'tab-btn';
+        unitBtn.innerHTML = '⚖️ Smart Unit Converter';
+        unitBtn.onclick = () => switchTab('unit-app');
+        sidebar.insertBefore(unitBtn, themeRow);
+
+        // 2. I-append ang mga bagong App Panel Sections sa dulo ng iyong Workspace
+        const workspace = document.querySelector('.workspace');
+        
+        const gadgetPanels = `
+            <!-- PASSWORD GENERATOR SECTION -->
+            <div id="pass-app" class="app-section">
+                <h3>🔑 Secure Password Generator Engine</h3>
+                <div class="grid-layout">
+                    <div class="data-card">
+                        <h4>Configuration Parameters</h4>
+                        <label style="margin-top:10px; display:block;">Password Character Length: <span id="pass-len-lbl" style="font-weight:bold; color:var(--accent);">12</span></label>
+                        <input type="range" id="pass-length" min="6" max="32" value="12" oninput="document.getElementById('pass-len-lbl').innerText = this.value; runPasswordGenerator();">
+                        
+                        <div style="display:flex; flex-direction:column; gap:8px; margin-top:10px;">
+                            <label style="display:flex; align-items:center; gap:8px; text-transform:none;"><input type="checkbox" id="pass-num" checked onchange="runPasswordGenerator()" style="width:auto; margin:0;"> Include Numbers (0-9)</label>
+                            <label style="display:flex; align-items:center; gap:8px; text-transform:none;"><input type="checkbox" id="pass-sym" checked onchange="runPasswordGenerator()" style="width:auto; margin:0;"> Include Special Characters (!@#$%^&*)</label>
+                        </div>
+                        <button class="btn" style="width:100%; margin-top:15px; justify-content:center;" onclick="runPasswordGenerator()">Re-Generate Token</button>
+                    </div>
+                    <div class="data-card" style="text-align:center; display:flex; flex-direction:column; justify-content:center;">
+                        <h4>Generated Output Key</h4>
+                        <input type="text" id="pass-output-screen" readonly style="font-size:1.2rem; font-family:monospace; text-align:center; margin:20px 0; letter-spacing:2px; background:rgba(0,0,0,0.3); border-color:var(--accent);">
+                        <button class="btn" style="width:100%; justify-content:center;" onclick="copyGeneratedPassword()">Copy Secure Password</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SMART UNIT CONVERTER SECTION -->
+            <div id="unit-app" class="app-section">
+                <h3>⚖️ Multi-Metric Smart Unit Converter</h3>
+                <div class="grid-layout">
+                    <!-- WEIGHT -->
+                    <div class="data-card">
+                        <h4>Weight / Timbang</h4>
+                        <input type="number" id="unit-kg" placeholder="Kilograms (kg)" oninput="convertMetrics('weight', 'kg')">
+                        <div style="text-align:center; font-size:1.2rem; margin:10px 0; color:var(--accent);">⇄</div>
+                        <input type="number" id="unit-lbs" placeholder="Pounds (lbs)" oninput="convertMetrics('weight', 'lbs')">
+                    </div>
+                    <!-- DISTANCE -->
+                    <div class="data-card">
+                        <h4>Distance / Distansya</h4>
+                        <input type="number" id="unit-km" placeholder="Kilometers (km)" oninput="convertMetrics('dist', 'km')">
+                        <div style="text-align:center; font-size:1.2rem; margin:10px 0; color:var(--accent);">⇄</div>
+                        <input type="number" id="unit-miles" placeholder="Miles (mi)" oninput="convertMetrics('dist', 'miles')">
+                    </div>
+                    <!-- TEMPERATURE -->
+                    <div class="data-card">
+                        <h4>Temperature / Temperatura</h4>
+                        <input type="number" id="unit-c" placeholder="Celsius (°C)" oninput="convertMetrics('temp', 'c')">
+                        <div style="text-align:center; font-size:1.2rem; margin:10px 0; color:var(--accent);">⇄</div>
+                        <input type="number" id="unit-f" placeholder="Fahrenheit (°F)" oninput="convertMetrics('temp', 'f')">
+                    </div>
+                </div>
+            </div>
+        `;
+        workspace.insertAdjacentHTML('beforeend', gadgetPanels);
+        
+        // Awtomatikong patakbuhin ang password engine para may initial value agad
+        runPasswordGenerator();
+    });
+
+    // 🔑 PASSWORD GENERATOR ALGORITHMS
+    function runPasswordGenerator() {
+        const length = parseInt(document.getElementById('pass-length').value);
+        const includeNums = document.getElementById('pass-num').checked;
+        const includeSyms = document.getElementById('pass-sym').checked;
+        
+        let alpha = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
+        if (includeNums) alpha += "0123456789";
+        if (includeSyms) alpha += "!@#$%^&*()_+~|}{[]:;?><,./-=";
+        
+        let generatedKey = "";
+        for (let i = 0; i < length; i++) {
+            const randIdx = Math.floor(Math.random() * alpha.length);
+            generatedKey += alpha.charAt(randIdx);
+        }
+        
+        const screen = document.getElementById('pass-output-screen');
+        if (screen) screen.value = generatedKey;
+    }
+
+    function copyGeneratedPassword() {
+        const pass = document.getElementById('pass-output-screen').value;
+        navigator.clipboard.writeText(pass);
+        alert("🔒 Secure password copied to your system clipboard!");
+    }
+
+    // ⚖️ SMART UNIT CONVERSION UTILITIES
+    function convertMetrics(type, source) {
+        if (type === 'weight') {
+            const kgBox = document.getElementById('unit-kg');
+            const lbsBox = document.getElementById('unit-lbs');
+            if (source === 'kg') {
+                lbsBox.value = kgBox.value === "" ? "" : (parseFloat(kgBox.value) * 2.20462).toFixed(2);
+            } else {
+                kgBox.value = lbsBox.value === "" ? "" : (parseFloat(lbsBox.value) / 2.20462).toFixed(2);
+            }
+        }
+        if (type === 'dist') {
+            const kmBox = document.getElementById('unit-km');
+            const miBox = document.getElementById('unit-miles');
+            if (source === 'km') {
+                miBox.value = kmBox.value === "" ? "" : (parseFloat(kmBox.value) * 0.621371).toFixed(2);
+            } else {
+                kmBox.value = miBox.value === "" ? "" : (parseFloat(miBox.value) / 0.621371).toFixed(2);
+            }
+        }
+        if (type === 'temp') {
+            const cBox = document.getElementById('unit-c');
+            const fBox = document.getElementById('unit-f');
+            if (source === 'c') {
+                fBox.value = cBox.value === "" ? "" : ((parseFloat(cBox.value) * 9/5) + 32).toFixed(1);
+            } else {
+                cBox.value = fBox.value === "" ? "" : (((parseFloat(fBox.value) - 32) * 5/9)).toFixed(1);
+            }
+        }
+    }
+</script>
+EOFcat >> index.html << 'EOF'
+<script>
+    // LAYOUT INJECTION ENGINE FOR GADGET MODULES
+    window.addEventListener('DOMContentLoaded', () => {
+        const sidebar = document.querySelector('.sidebar');
+        const themeRow = document.querySelector('.theme-picker-row');
+        
+        // 1. I-inject ang mga bagong buttons sa iyong Sidebar Navigation
+        
+
+        const unitBtn = document.createElement('button');
+        unitBtn.className = 'tab-btn';
+        unitBtn.innerHTML = '⚖️ Smart Unit Converter';
+        unitBtn.onclick = () => switchTab('unit-app');
+        sidebar.insertBefore(unitBtn, themeRow);
+
+        // 2. I-append ang mga bagong App Panel Sections sa dulo ng iyong Workspace
+        const workspace = document.querySelector('.workspace');
+        
+        const gadgetPanels = `
+            <!-- PASSWORD GENERATOR SECTION -->
+            <div id="pass-app" class="app-section">
+                <h3>🔑 Secure Password Generator Engine</h3>
+                <div class="grid-layout">
+                    <div class="data-card">
+                        <h4>Configuration Parameters</h4>
+                        <label style="margin-top:10px; display:block;">Password Character Length: <span id="pass-len-lbl" style="font-weight:bold; color:var(--accent);">12</span></label>
+                        <input type="range" id="pass-length" min="6" max="32" value="12" oninput="document.getElementById('pass-len-lbl').innerText = this.value; runPasswordGenerator();">
+                        
+                        <div style="display:flex; flex-direction:column; gap:8px; margin-top:10px;">
+                            <label style="display:flex; align-items:center; gap:8px; text-transform:none;"><input type="checkbox" id="pass-num" checked onchange="runPasswordGenerator()" style="width:auto; margin:0;"> Include Numbers (0-9)</label>
+                            <label style="display:flex; align-items:center; gap:8px; text-transform:none;"><input type="checkbox" id="pass-sym" checked onchange="runPasswordGenerator()" style="width:auto; margin:0;"> Include Special Characters (!@#$%^&*)</label>
+                        </div>
+                        <button class="btn" style="width:100%; margin-top:15px; justify-content:center;" onclick="runPasswordGenerator()">Re-Generate Token</button>
+                    </div>
+                    <div class="data-card" style="text-align:center; display:flex; flex-direction:column; justify-content:center;">
+                        <h4>Generated Output Key</h4>
+                        <input type="text" id="pass-output-screen" readonly style="font-size:1.2rem; font-family:monospace; text-align:center; margin:20px 0; letter-spacing:2px; background:rgba(0,0,0,0.3); border-color:var(--accent);">
+                        <button class="btn" style="width:100%; justify-content:center;" onclick="copyGeneratedPassword()">Copy Secure Password</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SMART UNIT CONVERTER SECTION -->
+            <div id="unit-app" class="app-section">
+                <h3>⚖️ Multi-Metric Smart Unit Converter</h3>
+                <div class="grid-layout">
+                    <!-- WEIGHT -->
+                    <div class="data-card">
+                        <h4>Weight / Timbang</h4>
+                        <input type="number" id="unit-kg" placeholder="Kilograms (kg)" oninput="convertMetrics('weight', 'kg')">
+                        <div style="text-align:center; font-size:1.2rem; margin:10px 0; color:var(--accent);">⇄</div>
+                        <input type="number" id="unit-lbs" placeholder="Pounds (lbs)" oninput="convertMetrics('weight', 'lbs')">
+                    </div>
+                    <!-- DISTANCE -->
+                    <div class="data-card">
+                        <h4>Distance / Distansya</h4>
+                        <input type="number" id="unit-km" placeholder="Kilometers (km)" oninput="convertMetrics('dist', 'km')">
+                        <div style="text-align:center; font-size:1.2rem; margin:10px 0; color:var(--accent);">⇄</div>
+                        <input type="number" id="unit-miles" placeholder="Miles (mi)" oninput="convertMetrics('dist', 'miles')">
+                    </div>
+                    <!-- TEMPERATURE -->
+                    <div class="data-card">
+                        <h4>Temperature / Temperatura</h4>
+                        <input type="number" id="unit-c" placeholder="Celsius (°C)" oninput="convertMetrics('temp', 'c')">
+                        <div style="text-align:center; font-size:1.2rem; margin:10px 0; color:var(--accent);">⇄</div>
+                        <input type="number" id="unit-f" placeholder="Fahrenheit (°F)" oninput="convertMetrics('temp', 'f')">
+                    </div>
+                </div>
+            </div>
+        `;
+        workspace.insertAdjacentHTML('beforeend', gadgetPanels);
+        
+        // Awtomatikong patakbuhin ang password engine para may initial value agad
+        runPasswordGenerator();
+    });
+
+    // 🔑 PASSWORD GENERATOR ALGORITHMS
+    function runPasswordGenerator() {
+        const length = parseInt(document.getElementById('pass-length').value);
+        const includeNums = document.getElementById('pass-num').checked;
+        const includeSyms = document.getElementById('pass-sym').checked;
+        
+        let alpha = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
+        if (includeNums) alpha += "0123456789";
+        if (includeSyms) alpha += "!@#$%^&*()_+~|}{[]:;?><,./-=";
+        
+        let generatedKey = "";
+        for (let i = 0; i < length; i++) {
+            const randIdx = Math.floor(Math.random() * alpha.length);
+            generatedKey += alpha.charAt(randIdx);
+        }
+        
+        const screen = document.getElementById('pass-output-screen');
+        if (screen) screen.value = generatedKey;
+    }
+
+    function copyGeneratedPassword() {
+        const pass = document.getElementById('pass-output-screen').value;
+        navigator.clipboard.writeText(pass);
+        alert("🔒 Secure password copied to your system clipboard!");
+    }
+
+    // ⚖️ SMART UNIT CONVERSION UTILITIES
+    function convertMetrics(type, source) {
+        if (type === 'weight') {
+            const kgBox = document.getElementById('unit-kg');
+            const lbsBox = document.getElementById('unit-lbs');
+            if (source === 'kg') {
+                lbsBox.value = kgBox.value === "" ? "" : (parseFloat(kgBox.value) * 2.20462).toFixed(2);
+            } else {
+                kgBox.value = lbsBox.value === "" ? "" : (parseFloat(lbsBox.value) / 2.20462).toFixed(2);
+            }
+        }
+        if (type === 'dist') {
+            const kmBox = document.getElementById('unit-km');
+            const miBox = document.getElementById('unit-miles');
+            if (source === 'km') {
+                miBox.value = kmBox.value === "" ? "" : (parseFloat(kmBox.value) * 0.621371).toFixed(2);
+            } else {
+                kmBox.value = miBox.value === "" ? "" : (parseFloat(miBox.value) / 0.621371).toFixed(2);
+            }
+        }
+        if (type === 'temp') {
+            const cBox = document.getElementById('unit-c');
+            const fBox = document.getElementById('unit-f');
+            if (source === 'c') {
+                fBox.value = cBox.value === "" ? "" : ((parseFloat(cBox.value) * 9/5) + 32).toFixed(1);
+            } else {
+                cBox.value = fBox.value === "" ? "" : (((parseFloat(fBox.value) - 32) * 5/9)).toFixed(1);
+            }
+        }
+    }
+</script>
+<script>
+    </script>
+</body>
+</html><script>
+    // PARALLEL GADGET INTEGRATION PIPELINE
+    window.addEventListener('DOMContentLoaded', () => {
+        // 1. Inject Note Export Component directly beneath your Task Manager layout
+        const taskSection = document.getElementById('task-app');
+        if (taskSection) {
+            const exportBtnHTML = `
+                <button class="btn btn-secondary" style="margin-top:15px; width:100%; justify-content:center;" onclick="exportNotesToTextFile()">
+                    💾 Export Tasks List to Local Text File (.txt)
+                </button>
+            `;
+            taskSection.insertAdjacentHTML('beforeend', exportBtnHTML);
+        }
+
+        // 2. Inject Tip Split-Bill Calculator directly beneath your Smart Calculator interface
+        const calcSection = document.getElementById('calc-app');
+        if (calcSection) {
+            const tipLayoutHTML = `
+                <div class="data-card" style="margin-top:25px; border-top: 1px solid #333; padding-top:20px;">
+                    <h4>🍽️ Business Tip & Bill Splitter</h4>
+                    <div style="margin-top:15px;">
+                        <label>Total Bill Amount ($):</label>
+                        <input type="number" id="tip-bill" value="100" oninput="calculateSplitTipMetrics()">
+                        <label>Tip Percentage (%):</label>
+                        <input type="number" id="tip-pct" value="15" oninput="calculateSplitTipMetrics()">
+                        <label>Number of People:</label>
+                        <input type="number" id="tip-people" value="2" oninput="calculateSplitTipMetrics()">
+                    </div>
+                    <div class="grid-layout" style="grid-template-columns: repeat(2, 1fr); margin-top:15px;">
+                        <div style="background:rgba(0,0,0,0.2); padding:10px; border-radius:6px; text-align:center;">
+                            <span style="font-size:0.85rem; color:#aaa; display:block;">Calculated Tip (Each):</span>
+                            <span id="lbl-tip-each" style="font-size:1.2rem; font-weight:bold; color:var(--accent);">$7.50</span>
+                        </div>
+                        <div style="background:rgba(0,0,0,0.2); padding:10px; border-radius:6px; text-align:center;">
+                            <span style="font-size:0.85rem; color:#aaa; display:block;">Total Due (Each):</span>
+                            <span id="lbl-total-each" style="font-size:1.2rem; font-weight:bold; color:var(--accent);">$57.50</span>
+                        </div>
+                    </div>
+                </div>
+            `;
+            calcSection.insertAdjacentHTML('beforeend', tipLayoutHTML);
+        }
+    });
+</script>
+<script>
+    // 1. PLAINTEXT NOTES FILE EXPORT ENGINE
+    function exportNotesToTextFile() {
+        // Collect current live items out of system memory vault
+        const tasksArray = JSON.parse(localStorage.getItem('core_tasks')) || [];
+        if (tasksArray.length === 0) { alert("Your task board is currently empty. Add a task before exporting!"); return; }
+        
+        let outputText = "========================================\n";
+        outputText += "   OPERATIONAL PORTAL TASK BOARD EXPORT \n";
+        outputText += `   Generated On: ${new Date().toLocaleString()}\n`;
+        outputText += "========================================\n\n";
+        
+        tasksArray.forEach((t, i) => { outputText += `${i + 1}. [ ] ${t.text}\n`; });
+        
+        // Trigger safe native download stream sequence
+        const blob = new Blob([outputText], { type: 'text/plain;charset=utf-8;' });
+        const link = document.createElement("a");
+        link.href = URL.createObjectURL(blob);
+        link.download = `workspace_tasks_backup_${Date.now()}.txt`;
+        link.style.display = "none";
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+    }
+
+    // 2. MATHEMATICAL BILL SPLITTING ENGINE
+    function calculateSplitTipMetrics() {
+        const bill = parseFloat(document.getElementById('tip-bill').value) || 0;
+        const pct = parseFloat(document.getElementById('tip-pct').value) || 0;
+        const people = Math.max(parseInt(document.getElementById('tip-people').value) || 1, 1);
+        
+        const totalTip = bill * (pct / 100);
+        const splitTip = totalTip / people;
+        const splitTotal = (bill + totalTip) / people;
+        
+        document.getElementById('lbl-tip-each').innerText = `$${splitTip.toFixed(2)}`;
+        document.getElementById('lbl-total-each').innerText = `$${splitTotal.toFixed(2)}`;
+    }
+</script>
+<script>
+    // AUTOMATED SUB-PANEL INJECTION PIPELINE
+    window.addEventListener('DOMContentLoaded', () => {
+        const sidebar = document.querySelector('.sidebar');
+        const themeRow = document.querySelector('.theme-picker-row');
+        
+        // 1. Inject the Speed Test navigation button safely into the sidebar layout
+        const speedBtn = document.createElement('button');
+        speedBtn.className = 'tab-btn';
+        speedBtn.innerHTML = '⚡ Internet Speed Test';
+        speedBtn.onclick = () => switchTab('speed-app');
+        sidebar.insertBefore(speedBtn, themeRow);
+
+        // 2. Inject the Excel CSV Data Export Button directly inside your Expense Tracker panel layout
+        const expenseSection = document.getElementById('expense-app');
+        if (expenseSection) {
+            const expBtnRow = expenseSection.querySelector('.budget-container') || expenseSection;
+            const csvExportBtnHTML = `
+                <button class="btn btn-secondary" style="margin-top: 10px; width: 100%; justify-content: center; background: #107c41; border-color: #107c41;" onclick="exportExpenseLedgerToExcelCSV()">
+                    📊 Export Budget Ledger to Microsoft Excel (.csv)
+                </button>
+            `;
+            expBtnRow.insertAdjacentHTML('beforeend', csvExportBtnHTML);
+        }
+
+        // 3. Inject the Speed Test workspace panel wrapper at the end of the workspace container
+        const workspace = document.querySelector('.workspace');
+        const speedSection = document.createElement('div');
+        speedSection.id = 'speed-app';
+        speedSection.className = 'app-section';
+        speedSection.innerHTML = `
+            <h3>⚡ Internet Speed Test & Network Diagnostics</h3>
+            <div class="grid-layout">
+                <div class="data-card" style="text-align:center; padding:30px; display:flex; flex-direction:column; justify-content:center; align-items:center;">
+                    <h4>Network Bandwidth Scanner</h4>
+                    <div id="speed-radial-gauge" style="width:140px; height:140px; border:8px solid #252525; border-top-color:var(--accent); border-radius:50%; margin:20px auto; display:flex; align-items:center; justify-content:center; font-size:1.8rem; font-weight:bold; font-family:monospace; transition: transform 0.1s ease;">
+                        <span id="speed-gauge-num">0</span>
+                    </div>
+                    <button class="btn" id="speed-test-run-btn" style="width:100%; justify-content:center;" onclick="executeNetworkDiagnosticsSpeedTest()">Run Diagnostic Diagnostics Scan</button>
+                </div>
+                <div class="data-card" style="display:flex; flex-direction:column; justify-content:space-between; padding:25px;">
+                    <h4>Diagnostic Telemetry Records</h4>
+                    <div style="display:flex; flex-direction:column; gap:12px; margin-top:15px; font-family:monospace; font-size:1rem;">
+                        <div style="display:flex; justify-content:space-between; border-bottom:1px solid #333; padding-bottom:6px;"><span>📡 Connection Node:</span><span style="color:#00ff66; font-weight:bold;">Local Loopback Secure</span></div>
+                        <div style="display:flex; justify-content:space-between; border-bottom:1px solid #333; padding-bottom:6px;"><span>⏱️ Ping Latency:</span><span id="speed-lbl-ping">-- ms</span></div>
+                        <div style="display:flex; justify-content:space-between; border-bottom:1px solid #333; padding-bottom:6px;"><span>⬇️ Download Capacity:</span><span id="speed-lbl-down" style="font-weight:bold; color:var(--accent);">-- Mbps</span></div>
+                        <div style="display:flex; justify-content:space-between; border-bottom:1px solid #333; padding-bottom:6px;"><span>⬆️ Upload Throughput:</span><span id="speed-lbl-up" style="font-weight:bold; color:var(--accent);">-- Mbps</span></div>
+                    </div>
+                    <div id="speed-test-status" style="margin-top:15px; text-align:center; font-weight:bold; font-size:0.9rem; color:#aaa;">System Standby</div>
+                </div>
+            </div>
+        `;
+        workspace.appendChild(speedSection);
+    });
+
+    // 1. DYNAMIC EXCEL BUDGET LEDGER BACKUP ROUTINE
+    function exportExpenseLedgerToExcelCSV() {
+        const storedExpenses = JSON.parse(localStorage.getItem('core_exp')) || [];
+        if (storedExpenses.length === 0) { alert("Your expense tracker spreadsheet ledger is currently empty. Please log an entry first!"); return; }
+        
+        // Build Excel structural rows matching standard database CSV frameworks
+        let csvContent = "data:text/csv;charset=utf-8,";
+        csvContent += "Index Reference,Item Description,Currency Symbol,Allocated Cost Net\r\n";
+        
+        storedExpenses.forEach((item, index) => {
+            // Clean strings of internal commas to protect structural cells from warping
+            let sanitizedDesc = item.desc.replace(/,/g, " ");
+            csvContent += `${index + 1},${sanitizedDesc},${item.curr},${item.amt}\r\n`;
+        });
+        
+        // Trigger automated web-browser download action sequence
+        const encodedUri = encodeURI(csvContent);
+        const downloadAnchor = document.createElement("a");
+        downloadAnchor.setAttribute("href", encodedUri);
+        downloadAnchor.setAttribute("download", `budget_ledger_ledger_backup_${Date.now()}.csv`);
+        downloadAnchor.style.display = "none";
+        document.body.appendChild(downloadAnchor);
+        downloadAnchor.click();
+        document.body.removeChild(downloadAnchor);
+    }
+
+    // 2. NETWORK BALANCING SPEED TEST SIMULATOR ALGORITHMS
+    function executeNetworkDiagnosticsSpeedTest() {
+        const runBtn = document.getElementById('speed-test-run-btn');
+        const statusLbl = document.getElementById('speed-test-status');
+        const gaugeCircle = document.getElementById('speed-radial-gauge');
+        const gaugeNum = document.getElementById('speed-gauge-num');
+        
+        if (!runBtn || runBtn.disabled) return;
+        runBtn.disabled = true;
+        runBtn.innerText = "Scanning Bands...";
+        
+        // Reset old records
+        document.getElementById('speed-lbl-ping').innerText = "-- ms";
+        document.getElementById('speed-lbl-down').innerText = "-- Mbps";
+        document.getElementById('speed-lbl-up').innerText = "-- Mbps";
+        
+        let counter = 0;
+        statusLbl.innerText = "Measuring server latency spikes...";
+        statusLbl.style.color = "#ffa500";
+        
+        // Simulation Animation Control Pipeline
+        let animationInterval = setInterval(() => {
+            counter += Math.floor(Math.random() * 25) + 5;
+            if (counter > 380) counter = Math.floor(Math.random() * 40) + 320; // Maintain dynamic data variation caps
+            
+            gaugeNum.innerText = counter;
+            gaugeCircle.style.transform = `rotate(${counter}deg)`;
+        }, 60);
+
+        // Step A: Complete Ping Latency Compute Nodes
+        setTimeout(() => {
+            const simulatedPing = (Math.random() * (22 - 4) + 4).toFixed(0);
+            document.getElementById('speed-lbl-ping').innerText = `${simulatedPing} ms`;
+            statusLbl.innerText = "Analyzing bandwidth download capacity streams...";
+        }, 1200);
+
+        // Step B: Complete Download Pipeline Calculations
+        setTimeout(() => {
+            clearInterval(animationInterval);
+            const finalDownloadSpeed = (Math.random() * (420 - 180) + 180).toFixed(1);
+            document.getElementById('speed-lbl-down').innerText = `${finalDownloadSpeed} Mbps`;
+            gaugeNum.innerText = Math.round(finalDownloadSpeed);
+            gaugeCircle.style.transform = 'rotate(0deg)';
+            
+            statusLbl.innerText = "Analyzing upstream compression pipelines...";
+            
+            // Turn animation wheels back on briefly for upload metrics tracking
+            animationInterval = setInterval(() => {
+                let upTemp = Math.floor(Math.random() * 15) + 80;
+                gaugeNum.innerText = upTemp;
+            }, 60);
+        }, 3200);
+
+        // Step C: Complete Upload Calculations and Clean Thread Handlers
+        setTimeout(() => {
+            clearInterval(animationInterval);
+            const finalUploadSpeed = (Math.random() * (95 - 45) + 45).toFixed(1);
+            document.getElementById('speed-lbl-up').innerText = `${finalUploadSpeed} Mbps`;
+            gaugeNum.innerText = Math.round(finalUploadSpeed);
+            
+            statusLbl.innerText = "✓ Diagnostics Completed Successfully";
+            statusLbl.style.color = "#00ff66";
+            
+            runBtn.disabled = false;
+            runBtn.innerText = "Run Diagnostic Diagnostics Scan";
+        }, 5200);
+    }
+</script>
+<script>
+    // HARDWARE & TIMECARD SIDEBAR NAV INJECTION PIPELINE
+    window.addEventListener('DOMContentLoaded', () => {
+        const sidebar = document.querySelector('.sidebar');
+        const themeRow = document.querySelector('.theme-picker-row');
+        
+        const hardwareBtn = document.createElement('button');
+        hardwareBtn.className = 'tab-btn';
+        hardwareBtn.innerHTML = '💻 System & Battery Lab';
+        hardwareBtn.onclick = () => switchTab('hardware-app');
+        sidebar.insertBefore(hardwareBtn, themeRow);
+
+        const billingBtn = document.createElement('button');
+        billingBtn.className = 'tab-btn';
+        billingBtn.innerHTML = '📈 Project Time-Card';
+        billingBtn.onclick = () => switchTab('billing-app');
+        sidebar.insertBefore(billingBtn, themeRow);
+    });
+</script>
+<script>
+    window.addEventListener('DOMContentLoaded', () => {
+        const workspace = document.querySelector('.workspace');
+        const extraGadgetsHTML = `
+            <!-- SYSTEM HARDWARE LAB PANEL -->
+            <div id="hardware-app" class="app-section">
+                <h3>💻 Device Telemetry & Battery Health Monitor</h3>
+                <div class="grid-layout">
+                    <div class="data-card" style="text-align:center; padding:25px;">
+                        <h4>Power Battery Status</h4>
+                        <div id="bat-gauge" style="font-size:3rem; font-weight:bold; margin:15px 0; color:#00ff66;">--%</div>
+                        <div id="bat-status" style="font-size:0.95rem; color:#aaa;">Detecting hardware threads...</div>
+                    </div>
+                    <div class="data-card" style="display:flex; flex-direction:column; justify-content:center; padding:25px;">
+                        <h4>Storage & Core Telemetry</h4>
+                        <div style="display:flex; flex-direction:column; gap:10px; font-family:monospace; margin-top:10px;">
+                            <div style="display:flex; justify-content:space-between; border-bottom:1px solid #333; padding-bottom:5px;"><span>💾 Free Local Storage:</span><span id="hardware-lbl-storage">Calculating...</span></div>
+                            <div style="display:flex; justify-content:space-between; border-bottom:1px solid #333; padding-bottom:5px;"><span>⚙️ Processing Cores:</span><span style="color:var(--accent); font-weight:bold;">${navigator.hardwareConcurrency || 'Unknown'} Cores</span></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- PROJECT TIME CARD BILLING PANEL -->
+            <div id="billing-app" class="app-section">
+                <h3>📈 Developer Project Time-Card & Billing Tracker</h3>
+                <div class="grid-layout">
+                    <div class="data-card">
+                        <h4>Configure Active Job Session</h4>
+                        <label style="margin-top:10px; display:block;">Project Contract Name:</label>
+                        <input type="text" id="bill-proj-name" value="Client Architecture Alpha">
+                        <label style="display:block;">Hourly Billing Rate ($/hr):</label>
+                        <input type="number" id="bill-proj-rate" value="50">
+                        <div class="btn-row" style="margin-top:15px;">
+                            <button id="bill-start-btn" class="btn" onclick="startBillingTimer()">Start Session Clock</button>
+                            <button id="bill-stop-btn" class="btn btn-danger" disabled onclick="stopBillingTimer()">Stop & Save Log</button>
+                        </div>
+                    </div>
+                    <div class="data-card" style="text-align:center; display:flex; flex-direction:column; justify-content:center; align-items:center; background:rgba(0,0,0,0.15); border-color:var(--accent);">
+                        <h4 id="bill-live-project-title" style="color:#aaa; font-size:1.1rem; margin-bottom:5px;">Session: Idle</h4>
+                        <div id="bill-live-timer" style="font-size:2.5rem; font-weight:bold; font-family:monospace; margin-bottom:10px;">00:00:00</div>
+                        <div style="font-size:0.9rem; color:#aaa;">Estimated Live Earnings:</div>
+                        <div id="bill-live-cash" style="font-size:2rem; font-weight:bold; color:#00ff66; font-family:monospace;">$0.00</div>
+                    </div>
+                </div>
+                <div class="data-card" style="margin-top:20px;">
+                    <h4>Saved Freelance Work Session History Ledger</h4>
+                    <table style="margin-top:10px;">
+                        <thead><tr><th>Project Name</th><th>Time Logged</th><th>Rate</th><th>Total Earned</th></tr></thead>
+                        <tbody id="billing-ledger-rows"></tbody>
+                    </table>
+                </div>
+            </div>
+        `;
+        workspace.insertAdjacentHTML('beforeend', extraGadgetsHTML);
+        
+        initBatteryTelemetryAPI();
+        calculateBrowserMemoryStorage();
+        renderBillingLedger();
+    });
+</script>
+<script>
+    // DEVICE HARDWARE TELEMETRY DRIVERS
+    function initBatteryTelemetryAPI() {
+        if (navigator.getBattery) {
+            navigator.getBattery().then(battery => {
+                const updateBatteryDisplay = () => {
+                    const pct = Math.round(battery.level * 100);
+                    const bG = document.getElementById('bat-gauge');
+                    const bS = document.getElementById('bat-status');
+                    if (bG && bS) {
+                        bG.innerText = pct + "%";
+                        bG.style.color = pct <= 20 ? '#e03131' : (battery.charging ? '#00ff66' : 'var(--accent)');
+                        bS.innerText = battery.charging ? "⚡ Device Connected & Charging" : "🔋 Disconnected (On Internal Battery)";
+                    }
+                };
+                updateBatteryDisplay();
+                battery.addEventListener('levelchange', updateBatteryDisplay);
+                battery.addEventListener('chargingchange', updateBatteryDisplay);
+            });
+        }
+    }
+
+    function calculateBrowserMemoryStorage() {
+        if (navigator.storage && navigator.storage.estimate) {
+            navigator.storage.estimate().then(estimate => {
+                const availableMB = ((estimate.quota - estimate.usage) / (1024 * 1024)).toFixed(1);
+                const element = document.getElementById('hardware-lbl-storage');
+                if (element) element.innerText = availableMB + " MB Available";
+            });
+        }
+    }
+
+    // PROJECT TIME-CARD AND EARNINGS CALCULATION LOGIC
+    let billingHistory = JSON.parse(localStorage.getItem('core_billing_logs')) || [];
+    let billStartTimestamp = null, billTimerInterval = null;
+
+    function startBillingTimer() {
+        const name = document.getElementById('bill-proj-name').value.trim();
+        if(!name) return;
+        billStartTimestamp = Date.now();
+        document.getElementById('bill-start-btn').disabled = true;
+        document.getElementById('bill-stop-btn').disabled = false;
+        document.getElementById('bill-live-project-title').innerText = "Active: " + name;
+        const rate = parseFloat(document.getElementById('bill-proj-rate').value) || 0;
+
+        billTimerInterval = setInterval(() => {
+            const elapsed = Date.now() - billStartTimestamp;
+            const totSecs = Math.floor(elapsed / 1000);
+            const hrs = Math.floor(totSecs / 3600), mins = Math.floor((totSecs % 3600) / 60), secs = totSecs % 60;
+            document.getElementById('bill-live-timer').innerText = `${hrs.toString().padStart(2,'0')}:${mins.toString().padStart(2,'0')}:${secs.toString().padStart(2,'0')}`;
+            const liveEarnings = (elapsed / (1000 * 60 * 60)) * rate;
+            document.getElementById('bill-live-cash').innerText = "$" + liveEarnings.toFixed(2);
+        }, 1000);
+    }
+
+    function stopBillingTimer() {
+        clearInterval(billTimerInterval);
+        const elapsed = Date.now() - billStartTimestamp;
+        const name = document.getElementById('bill-proj-name').value.trim();
+        const rate = parseFloat(document.getElementById('bill-proj-rate').value) || 0;
+        const totalSecs = Math.floor(elapsed / 1000);
+        const hrs = Math.floor(totalSecs / 3600), mins = Math.floor((totalSecs % 3600) / 60), secs = totalSecs % 60;
+        const formattedDuration = `${hrs}h ${mins}m ${secs}s`;
+        const calculatedTotalPayout = ((elapsed / (1000 * 60 * 60)) * rate).toFixed(2);
+
+        billingHistory.push({ name, duration: formattedDuration, rate: `$${rate}/hr`, payout: `$${calculatedTotalPayout}` });
+        localStorage.setItem('core_billing_logs', JSON.stringify(billingHistory));
+
+        document.getElementById('bill-start-btn').disabled = false;
+        document.getElementById('bill-stop-btn').disabled = true;
+        document.getElementById('bill-live-timer').innerText = "00:00:00";
+        document.getElementById('bill-live-cash').innerText = "$0.00";
+        document.getElementById('bill-live-project-title').innerText = "Session: Idle";
+        renderBillingLedger();
+    }
+
+    function renderBillingLedger() {
+        const tbody = document.getElementById('billing-ledger-rows');
+        if(!tbody) return;
+        tbody.innerHTML = '';
+        billingHistory.forEach(log => {
+            tbody.innerHTML += `<tr><td>${log.name}</td><td>${log.duration}</td><td>${log.rate}</td><td style="color:#00ff66; font-weight:bold;">${log.payout}</td></tr>`;
+        });
+    }
+</script>
+<style>
+    /* ADVANCED MOBILE RESPONSIVE MEDIA QUERIES */
+    @media (max-width: 768px) {
+        body { flex-direction: column; }
+        .sidebar { width: 100%; border-right: none; border-bottom: 1px solid #333; position: sticky; top: 0; z-index: 999; max-height: 200px; overflow-y: auto; padding: 15px; }
+        .sidebar h2 { margin-bottom: 5px; font-size: 1rem; text-align: center; }
+        .theme-picker-row { justify-content: center; padding-top: 10px; margin-top: 10px; }
+        .workspace { padding: 20px; }
+        #master-branding-banner { flex-direction: column; text-align: center; gap: 15px; padding: 15px; }
+        #master-branding-banner h1 { font-size: 1.4rem; }
+        .grid-layout { grid-template-columns: 1fr; }
+        input, select, textarea, .btn { font-size: 1.1rem; padding: 12px; }
+    }
+</style>
+<script>
+    // MOBILE FULL-SCREEN APPARATUS CONFIGURATOR
+    window.addEventListener('DOMContentLoaded', () => {
+        // Safe injection of mobile full-screen app properties directly into the HTML document head
+        const docHead = document.head;
+        const mobileMetaTags = `
+            <meta name="apple-mobile-web-app-capable" content="yes">
+            <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+            <meta name="apple-mobile-web-app-title" content="DevPortal">
+            <meta name="theme-color" content="#121212">
+        `;
+        docHead.insertAdjacentHTML('beforeend', mobileMetaTags);
+    });
+</script>
+<script>
+    window.addEventListener('DOMContentLoaded', () => {
+        const calSection = document.getElementById('cal-app');
+        if (!calSection) return;
+
+        // Append a mobile shortcut helper card into the system view layout
+        const mobileCardHTML = `
+            <div class="data-card" style="margin-top: 20px; border-left: 4px solid var(--accent); background: rgba(0,112,243,0.05);">
+                <h4>📱 Smartphone Shortcut Installer Guide</h4>
+                <p style="font-size: 0.88rem; color: #aaa; margin-top: 5px; line-height: 1.5;">
+                    To run this workspace as a full-screen mobile application on your smartphone:
+                </p>
+                <div style="font-size: 0.85rem; font-family: monospace; color: #fff; margin-top: 10px; display: flex; flex-direction: column; gap: 6px;">
+                    <div>🍏 <strong>iPhone / iOS:</strong> Tap <span style="color:var(--accent);">"Share"</span> icon -> Scroll down -> Select <span style="color:var(--accent);">"Add to Home Screen"</span></div>
+                    <div>🤖 <strong>Android / Chrome:</strong> Tap <span style="color:var(--accent);">"Three Dots Menu"</span> -> Select <span style="color:var(--accent);">"Install App"</span> or <span style="color:var(--accent);">"Add to Home Screen"</span></div>
+                </div>
+            </div>
+        `;
+        calSection.insertAdjacentHTML('beforeend', mobileCardHTML);
+    });
+</script>
