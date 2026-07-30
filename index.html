@@ -1618,3 +1618,126 @@ EOFcat >> index.html << 'EOF'
         docHead.insertAdjacentHTML('beforeend', mobileMetaTags);
     });
 </script>
+<script>
+    // AUTOMATED DATA EXPANSION PIPELINE
+    window.addEventListener('DOMContentLoaded', () => {
+        // 1. Inject Global Currency Ticker Matrix Layout
+        const convSection = document.getElementById('conv-app');
+        if (convSection) {
+            const tickerLayoutHTML = `
+                <div class="data-card" style="margin-top:20px; border-top:1px solid #333; padding-top:20px;">
+                    <h4>📈 Global Forex Currency Ticker Matrix (Base: USD)</h4>
+                    <div class="grid-layout" style="grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap:10px; margin-top:15px;" id="currency-ticker-matrix-box">
+                        <!-- Ticker nodes will be generated dynamically by processing loops -->
+                    </div>
+                </div>
+            `;
+            convSection.insertAdjacentHTML('beforeend', tickerLayoutHTML);
+        }
+
+        // 2. Inject Health Analytics Progress Charts Layout
+        const vitalsSection = document.getElementById('vitals-app');
+        if (vitalsSection) {
+            const healthChartLayoutHTML = `
+                <div class="data-card" style="margin-top:20px; border-top:1px solid #333; padding-top:20px;">
+                    <h4>📊 Daily Health Target Analytics Progress Dashboard</h4>
+                    <div style="margin-top:15px; display:flex; flex-direction:column; gap:15px;">
+                        <div>
+                            <div style="display:flex; justify-content:space-between; font-size:0.85rem; color:#aaa; margin-bottom:4px;">
+                                <span>💧 Hydration Progress:</span><span id="lbl-chart-water">0 / 2500 mL</span>
+                            </div>
+                            <div class="chart-bar-bg" style="height:12px;"><div id="chart-fill-water" class="chart-bar-fill" style="background:#0070f3; width:0%;"></div></div>
+                        </div>
+                        <div>
+                            <div style="display:flex; justify-content:space-between; font-size:0.85rem; color:#aaa; margin-bottom:4px;">
+                                <span>🍕 Calorie Logs Tracker:</span><span id="lbl-chart-calories">0 / 2000 kcal</span>
+                            </div>
+                            <div class="chart-bar-bg" style="height:12px;"><div id="chart-fill-calories" class="chart-bar-fill" style="background:#ffa500; width:0%;"></div></div>
+                        </div>
+                    </div>
+                </div>
+            `;
+            vitalsSection.insertAdjacentHTML('beforeend', healthChartLayoutHTML);
+        }
+    });
+</script>
+<script>
+    // 1. LIVE CURRENCY MATRIX CONTEXT TICKER
+    function runGlobalForexTickerLoop() {
+        const box = document.getElementById('currency-ticker-matrix-box');
+        if (!box) return;
+        
+        // Base static configuration maps against relative USD reference levels
+        const basicRates = { 'USD': 1.00, 'PHP': 58.40, 'EUR': 0.92, 'GBP': 0.78, 'JPY': 156.20, 'AUD': 1.51 };
+        box.innerHTML = '';
+        
+        Object.keys(basicRates).forEach(sym => {
+            // Calculate a localized random micro-fluctuation value to simulate a live market
+            let microFluctuation = (Math.random() * (0.04 - (-0.04)) + (-0.04));
+            let liveRateVal = basicRates[sym] + (basicRates[sym] * microFluctuation);
+            let stateColor = microFluctuation >= 0 ? '#00ff66' : '#e03131';
+            let arrowIndicator = microFluctuation >= 0 ? '▲' : '▼';
+            
+            box.innerHTML += `
+                <div style="background:rgba(0,0,0,0.2); padding:10px; border-radius:6px; border:1px solid #333; text-align:center;">
+                    <div style="font-size:0.85rem; color:#aaa; font-weight:bold;">${sym} / USD</div>
+                    <div style="font-size:1.1rem; font-weight:bold; font-family:monospace; margin:4px 0;">${liveRateVal.toFixed(2)}</div>
+                    <div style="font-size:0.75rem; color:${stateColor}; font-weight:bold;">${arrowIndicator} ${(Math.abs(microFluctuation)*100).toFixed(2)}%</div>
+                </div>
+            `;
+        });
+    }
+
+    // 2. HEALTH TRACKER CHARTS METRIC SYNC ENGINE
+    // Intercepts the original tracker storage call to automatically refresh dashboard visualizations
+    const masterHealthVaultHook = appendHealthVaultData;
+    appendHealthVaultData = function(str) {
+        if (typeof masterHealthVaultHook === 'function') {
+            masterHealthVaultHook(str);
+        }
+        computeLiveHealthVisualCharts();
+    };
+
+    function computeLiveHealthVisualCharts() {
+        const rawVaultDataString = localStorage.getItem('health_vault_data') || "";
+        
+        let accumulatedWater = 0;
+        let accumulatedCalories = 0;
+        
+        // Scan the stored plaintext lines for volume patterns using regular expressions
+        const linesArray = rawVaultDataString.split('\n');
+        linesArray.forEach(line => {
+            if (line.includes("Water volume intake:")) {
+                let match = line.match(/Water volume intake:\s*(\d+)\s*mL/);
+                if (match) accumulatedWater += parseInt(match[1]) || 0;
+            }
+            if (line.includes("Meal Consumed:")) {
+                // Extracts numeric parameter values logged in text fields
+                let calMatch = line.match(/(\d+)\s*kcal/i) || line.match(/(\d+)\s*calories/i);
+                if (calMatch) accumulatedCalories += parseInt(calMatch[1]) || 0;
+            }
+        });
+
+        // Set target benchmarks
+        const targetWaterMax = 2500;
+        const targetCaloriesMax = 2000;
+        
+        let pctWater = Math.min((accumulatedWater / targetWaterMax) * 100, 100);
+        let pctCalories = Math.min((accumulatedCalories / targetCaloriesMax) * 100, 100);
+        
+        if(document.getElementById('chart-fill-water')) {
+            document.getElementById('chart-fill-water').style.width = pctWater + '%';
+            document.getElementById('lbl-chart-water').innerText = `${accumulatedWater} / ${targetWaterMax} mL`;
+            
+            document.getElementById('chart-fill-calories').style.width = pctCalories + '%';
+            document.getElementById('lbl-chart-calories').innerText = `${accumulatedCalories} / ${targetCaloriesMax} kcal`;
+        }
+    }
+
+    // Turn on processing interval listeners
+    window.addEventListener('DOMContentLoaded', () => {
+        runGlobalForexTickerLoop();
+        setInterval(runGlobalForexTickerLoop, 8000); // Ticks every 8 seconds
+        computeLiveHealthVisualCharts();
+    });
+</script>
