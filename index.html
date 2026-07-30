@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Universal Workspace V-1</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="https://jsdelivr.net"></script>
+</head>
+<body>
+    <div class="app-container">
+        <nav class="sidebar">
+            <h2>Workspace V-1</h2>
+            <ul>
+                <li><a href="#" class="active" data-target="expense-tracker">Expense Tracker</a></li>
+                <li><a href="#" data-target="snippets">Snippets Manager</a></li>
+                <li><a href="#" data-target="ambient-sounds">Ambient Sounds</a></li>
+                <li><a href="#" data-target="invoice-gen">Invoice Generator</a></li>
+            </ul>
+        </nav>
+        <main class="content-area">
+            <!-- Expense Tracker Panel -->
+            <section id="expense-tracker" class="panel active">
+                <header class="panel-header">
+                    <h1>Expense & Budget Tracker</h1>
+                </header>
+                <div class="tracker-grid">
+                    <div class="card form-card">
+                        <h3>Add Transaction</h3>
+                        <form id="expense-form">
+                            <input type="text" id="exp-desc" placeholder="Description (e.g., Coffee, Groceries)" required>
+                            <div class="row">
+                                <input type="number" id="exp-amount" placeholder="Amount" step="0.01" required>
+                                <select id="exp-currency">
+                                    <option value="USD">USD ($)</option>
+                                    <option value="EUR">EUR (€)</option>
+                                    <option value="GBP">GBP (£)</option>
+                                    <option value="PHP">PHP (₱)</option>
+                                </select>
+                            </div>
+                            <button type="submit" class="btn-primary">Add Entry</button>
+                        </form>
+                    </div>
+                    <div class="card chart-card">
+                        <h3>Budget Breakdown</h3>
+                        <div class="chart-container" style="position: relative; height:200px;">
+                            <canvas id="budgetChart"></canvas>
+                        </div>
+                    </div>
+                    <div class="card list-card">
+                        <h3>Recent Transactions</h3>
+                        <ul id="transaction-list" class="data-list"></ul>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Clipboard Snippets Module Panel -->
+            <section id="snippets" class="panel">
+                <header class="panel-header">
+                    <h1>Quick Snippets & Clipboard Manager</h1>
+                </header>
+                <div class="tracker-grid">
+                    <div class="card form-card">
+                        <h3>Create New Snippet Template</h3>
+                        <form id="snippet-form">
+                            <input type="text" id="snip-title" placeholder="Snippet Title (e.g., Email Signature)" required>
+                            <textarea id="snip-text" placeholder="Paste your text content string records here..." rows="5" style="width: 100%; padding: 12px; margin-top: 10px; border-radius: 6px; border: 1px solid #ddd;" required></textarea>
+                            <button type="submit" class="btn-primary" style="margin-top: 10px;">Save Snippet</button>
+                        </form>
+                    </div>
+                    <div id="snippet-list" style="display: grid; gap: 20px; grid-column: span 2;"></div>
+                </div>
+            </section>
+
+            <!-- Ambient Background Sound Machine Panel -->
+            <section id="ambient-sounds" class="panel">
+                <header class="panel-header">
+                    <h1>Ambient Background Sound Machine</h1>
+                </header>
+                <div class="tracker-grid">
+                    <div class="card sound-card">
+                        <h3>White Noise Audio Mixer</h3>
+                        <div class="sound-control-row">
+                            <label>🌧️ Rain Environment</label>
+                            <input type="range" min="0" max="1" step="0.1" value="0" id="vol-rain" oninput="changeVolume('rain', this.value)">
+                        </div>
+                        <div class="sound-control-row">
+                            <label>☕ Cafe Ambience</label>
+                            <input type="range" min="0" max="1" step="0.1" value="0" id="vol-cafe" oninput="changeVolume('cafe', this.value)">
+                        </div>
+                        <div class="sound-control-row">
+                            <label>🔥 Campfire Crackle</label>
+                            <input type="range" min="0" max="1" step="0.1" value="0" id="vol-fire" oninput="changeVolume('fire', this.value)">
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+    <script src="app.js"></script>
+</body>
+</html>
