@@ -1605,3 +1605,16 @@ EOFcat >> index.html << 'EOF'
         calSection.insertAdjacentHTML('beforeend', mobileCardHTML);
     });
 </script>
+<script>
+    // RE-INJECTING MISSING MOBILE FULL-SCREEN CONFIGURATOR
+    window.addEventListener('DOMContentLoaded', () => {
+        const docHead = document.head;
+        const mobileMetaTags = `
+            <meta name="apple-mobile-web-app-capable" content="yes">
+            <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+            <meta name="apple-mobile-web-app-title" content="DevPortal">
+            <meta name="theme-color" content="#121212">
+        `;
+        docHead.insertAdjacentHTML('beforeend', mobileMetaTags);
+    });
+</script>
