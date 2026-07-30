@@ -5,7 +5,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Universal Workspace V-1</title>
     <link rel="stylesheet" href="styles.css">
+    <!-- ChartJS for visual budget graphs -->
     <script src="https://jsdelivr.net"></script>
+    <!-- SheetJS for local Excel data parsing and compilation extraction -->
+    <script src="https://jsdelivr.net"></script>
+    <!-- jsPDF for local vector PDF rendering frameworks -->
+    <script src="https://cloudflare.com"></script>
 </head>
 <body>
     <div class="app-container">
@@ -15,15 +20,14 @@
                 <li><a href="#" class="active" data-target="expense-tracker">Expense Tracker</a></li>
                 <li><a href="#" data-target="snippets">Snippets Manager</a></li>
                 <li><a href="#" data-target="ambient-sounds">Ambient Sounds</a></li>
+                <li><a href="#" data-target="email-drafter">Smart Email Drafter</a></li>
                 <li><a href="#" data-target="invoice-gen">Invoice Generator</a></li>
             </ul>
         </nav>
         <main class="content-area">
             <!-- Expense Tracker Panel -->
             <section id="expense-tracker" class="panel active">
-                <header class="panel-header">
-                    <h1>Expense & Budget Tracker</h1>
-                </header>
+                <header class="panel-header"><h1>Expense & Budget Tracker</h1></header>
                 <div class="tracker-grid">
                     <div class="card form-card">
                         <h3>Add Transaction</h3>
@@ -48,23 +52,24 @@
                         </div>
                     </div>
                     <div class="card list-card">
-                        <h3>Recent Transactions</h3>
+                        <div class="header-row" style="display: flex; justify-content: space-between; align-items: center;">
+                            <h3>Recent Transactions</h3>
+                            <button class="btn-primary" onclick="exportToExcel()" style="width: auto; padding: 6px 12px; font-size: 14px;">Export to Excel (.xlsx)</button>
+                        </div>
                         <ul id="transaction-list" class="data-list"></ul>
                     </div>
                 </div>
             </section>
 
-            <!-- Clipboard Snippets Module Panel -->
+            <!-- Clipboard Snippets Panel -->
             <section id="snippets" class="panel">
-                <header class="panel-header">
-                    <h1>Quick Snippets & Clipboard Manager</h1>
-                </header>
+                <header class="panel-header"><h1>Quick Snippets & Clipboard Manager</h1></header>
                 <div class="tracker-grid">
                     <div class="card form-card">
                         <h3>Create New Snippet Template</h3>
                         <form id="snippet-form">
-                            <input type="text" id="snip-title" placeholder="Snippet Title (e.g., Email Signature)" required>
-                            <textarea id="snip-text" placeholder="Paste your text content string records here..." rows="5" style="width: 100%; padding: 12px; margin-top: 10px; border-radius: 6px; border: 1px solid #ddd;" required></textarea>
+                            <input type="text" id="snip-title" placeholder="Snippet Title" required>
+                            <textarea id="snip-text" placeholder="Paste text here..." rows="5" style="width: 100%; padding: 12px; margin-top: 10px; border-radius: 6px; border: 1px solid #ddd;" required></textarea>
                             <button type="submit" class="btn-primary" style="margin-top: 10px;">Save Snippet</button>
                         </form>
                     </div>
@@ -74,23 +79,67 @@
 
             <!-- Ambient Background Sound Machine Panel -->
             <section id="ambient-sounds" class="panel">
-                <header class="panel-header">
-                    <h1>Ambient Background Sound Machine</h1>
-                </header>
+                <header class="panel-header"><h1>Ambient Background Sound Machine</h1></header>
                 <div class="tracker-grid">
                     <div class="card sound-card">
                         <h3>White Noise Audio Mixer</h3>
-                        <div class="sound-control-row">
-                            <label>🌧️ Rain Environment</label>
-                            <input type="range" min="0" max="1" step="0.1" value="0" id="vol-rain" oninput="changeVolume('rain', this.value)">
+                        <div class="sound-control-row"><label>🌧️ Rain Environment</label><input type="range" min="0" max="1" step="0.1" value="0" id="vol-rain" oninput="changeVolume('rain', this.value)"></div>
+                        <div class="sound-control-row"><label>☕ Cafe Ambience</label><input type="range" min="0" max="1" step="0.1" value="0" id="vol-cafe" oninput="changeVolume('cafe', this.value)"></div>
+                        <div class="sound-control-row"><label>🔥 Campfire Crackle</label><input type="range" min="0" max="1" step="0.1" value="0" id="vol-fire" oninput="changeVolume('fire', this.value)"></div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Smart Email & Reply Drafter Panel -->
+            <section id="email-drafter" class="panel">
+                <header class="panel-header"><h1>Smart Email & Reply Drafter</h1></header>
+                <div class="tracker-grid">
+                    <div class="card form-card">
+                        <h3>Draft Settings</h3>
+                        <div class="row">
+                            <select id="email-tone">
+                                <option value="professional">Professional / Formal</option>
+                                <option value="casual">Casual / Friendly</option>
+                                <option value="urgent">Urgent / Follow-Up</option>
+                            </select>
                         </div>
-                        <div class="sound-control-row">
-                            <label>☕ Cafe Ambience</label>
-                            <input type="range" min="0" max="1" step="0.1" value="0" id="vol-cafe" oninput="changeVolume('cafe', this.value)">
+                        <textarea id="email-prompt" placeholder="What is this email about? (e.g., Requesting extension for deadline, project submission updates)" rows="4" style="width:100%; padding:12px; border-radius:6px; border:1px solid #ddd;" required></textarea>
+                        <button class="btn-primary" onclick="generateEmailDraft()" style="margin-top:10px;">Compile Draft Text</button>
+                    </div>
+                    <div class="card display-card">
+                        <h3>Generated Text Output</h3>
+                        <textarea id="email-output" readonly rows="8" style="width:100%; padding:12px; margin-top:10px; border-radius:6px; background:#f8fafc; border:1px solid #e2e8f0; font-family:monospace; resize:none;"></textarea>
+                        <button class="btn-primary" onclick="copyEmailToClipboard()" style="margin-top:10px; background:#10b981;">Copy Draft</button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Invoice & Quote Generator Panel -->
+            <section id="invoice-gen" class="panel">
+                <header class="panel-header"><h1>Invoice & Quote Generator</h1></header>
+                <div class="tracker-grid">
+                    <div class="card form-card">
+                        <h3>Invoice Particulars</h3>
+                        <input type="text" id="inv-client" placeholder="Client Name / Company" required style="margin-bottom:10px;">
+                        <input type="text" id="inv-service" placeholder="Service Provided (e.g., Web Development)" required style="margin-bottom:10px;">
+                        <div class="row">
+                            <input type="number" id="inv-cost" placeholder="Total Cost Basis Amount" required>
+                            <select id="inv-currency">
+                                <option value="$">USD ($)</option>
+                                <option value="€">EUR (€)</option>
+                                <option value="₱">PHP (₱)</option>
+                            </select>
                         </div>
-                        <div class="sound-control-row">
-                            <label>🔥 Campfire Crackle</label>
-                            <input type="range" min="0" max="1" step="0.1" value="0" id="vol-fire" oninput="changeVolume('fire', this.value)">
+                        <button class="btn-primary" onclick="previewInvoice()" style="margin-top:10px;">Generate Preview</button>
+                    </div>
+                    <div class="card display-card">
+                        <h3>Document Print Preview</h3>
+                        <div id="invoice-preview-box" style="padding:20px; border:1px dashed #cbd5e1; background:#fff; min-height:150px; border-radius:6px; margin:10px 0;">
+                            <p style="color:#94a3b8; text-align:center;">No active invoice generated yet.</p>
+                        </div>
+                        <div class="row">
+                            <button class="btn-primary" onclick="exportInvoicePDF()" style="background:#ef4444;">Download vector PDF</button>
+                            <button class="btn-primary" onclick="exportInvoiceWord()" style="background:#3b82f6;">Download Word (.doc)</button>
                         </div>
                     </div>
                 </div>
