@@ -271,3 +271,91 @@
     </script>
 </body>
 </html>
+<!-- PASSWORD LOCK MODAL SCREEN -->
+<div id="lock-screen" style="position:fixed; top:0; left:0; width:100vw; height:100vh; background:#0b0f19; z-index:9999; display:flex; flex-direction:column; justify-content:center; align-items:center; padding:20px;">
+    <div style="background:#1e293b; border:1px solid #334155; padding:40px; border-radius:12px; text-align:center; max-width:400px; width:100%; box-shadow:0 10px 30px rgba(0,0,0,0.5);">
+        <h2 style="color:#0070f3; margin-bottom:10px; font-size:1.8rem;">🔒 System Portal Secured</h2>
+        <p style="color:#94a3b8; font-size:0.9rem; margin-bottom:25px;">Please enter your authorization credential token to unlock the developer workspace tools.</p>
+        <input type="password" id="sys-pass-input" placeholder="Enter System Password" style="text-align:center; margin-bottom:15px; font-size:1.2rem; letter-spacing:4px;">
+        <button class="btn" style="width:100%; justify-content:center;" onclick="validatePortalAccess()">Unlock Workspace</button>
+        <p id="lock-error-msg" style="color:#ef4444; margin-top:15px; font-size:0.9rem; display:none; font-weight:bold;">⚠️ Access Denied: Invalid Security Token</p>
+    </div>
+</div>
+
+<script>
+    // NAVIGATION EXTENSION SYSTEM
+    // Automatically injects the 6th tab button into your existing sidebar
+    window.addEventListener('DOMContentLoaded', () => {
+        const sidebar = document.querySelector('.sidebar');
+        const themeRow = document.querySelector('.theme-picker-row');
+        const newBtn = document.createElement('button');
+        newBtn.className = 'tab-btn';
+        newBtn.innerHTML = '📝 Task & Note Board';
+        newBtn.onclick = () => switchTab('task-app');
+        sidebar.insertBefore(newBtn, themeRow);
+
+        // Automatically injects the 6th app workspace section container
+        const workspace = document.querySelector('.workspace');
+        const newSection = document.createElement('div');
+        newSection.id = 'task-app';
+        newSection.className = 'app-section';
+        newSection.innerHTML = `
+            <h3>📝 Live Notes & Task Manager</h3>
+            <input type="text" id="task-title" placeholder="Add a new goal or mission criteria...">
+            <button class="btn" onclick="addTaskEntry()">Deploy Task To Grid</button>
+            <div class="grid-layout" id="task-board-vault" style="margin-top:20px;"></div>
+        `;
+        workspace.appendChild(newSection);
+        renderTaskBoard();
+    });
+</script>
+<script>
+    // 1. SECURITY SECURITY CRITERIA LOGIC
+    // Set your master unlock password string right here:
+    const MASTER_SECURITY_HASH = "1245"; 
+
+    function validatePortalAccess() {
+        const inputPass = document.getElementById('sys-pass-input').value;
+        const lockScreen = document.getElementById('lock-screen');
+        const errorMsg = document.getElementById('lock-error-msg');
+        
+        if (inputPass === MASTER_SECURITY_HASH) {
+            lockScreen.style.display = 'none';
+            sessionStorage.setItem('portal_authorized', 'true');
+        } else {
+            errorMsg.style.display = 'block';
+            document.getElementById('sys-pass-input').value = '';
+        }
+    }
+    // Session persistent bypass listener logic
+    if (sessionStorage.getItem('portal_authorized') === 'true') {
+        document.getElementById('lock-screen').style.display = 'none';
+    }
+
+    // 2. NEW ADDITIONAL TASK BOARD ENGINE
+    let systemTasks = JSON.parse(localStorage.getItem('core_tasks')) || [];
+    function renderTaskBoard() {
+        const board = document.getElementById('task-board-vault');
+        if (!board) return;
+        board.innerHTML = '';
+        systemTasks.forEach((task, index) => {
+            board.innerHTML += `
+                <div class="data-card" style="border-left: 4px solid var(--accent);">
+                    <p style="font-size:1rem; color:#fff; word-break:break-word; margin-bottom:15px;">${task.text}</p>
+                    <button class="btn btn-danger" style="padding:4px 8px; font-size:0.8rem;" onclick="deleteTaskEntry(${index})">Complete Mission</button>
+                </div>`;
+        });
+        localStorage.setItem('core_tasks', JSON.stringify(systemTasks));
+    }
+    function addTaskEntry() {
+        const txt = document.getElementById('task-title').value;
+        if(!txt) return;
+        systemTasks.push({ text: txt });
+        document.getElementById('task-title').value = '';
+        renderTaskBoard();
+    }
+    function deleteTaskEntry(idx) {
+        systemTasks.splice(idx, 1);
+        renderTaskBoard();
+    }
+</script>
