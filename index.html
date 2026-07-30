@@ -1912,3 +1912,92 @@
         setInterval(streamFinancialNewsWire, 15000);        // Rotates market news every 15 seconds
     });
 </script>
+<script>
+    // SOCIAL CONNECTIONS MODULE PIPELINE
+    window.addEventListener('DOMContentLoaded', () => {
+        const sidebar = document.querySelector('.sidebar');
+        const themeRow = document.querySelector('.theme-picker-row');
+        
+        // 1. Inject Navigation Tab Button
+        const socialBtn = document.createElement('button');
+        socialBtn.className = 'tab-btn';
+        socialBtn.innerHTML = '🔗 Matrix Social Hub';
+        socialBtn.onclick = () => switchTab('social-hub-app');
+        sidebar.insertBefore(socialBtn, themeRow);
+
+        // 2. Append Layout Section Box Container
+        const workspace = document.querySelector('.workspace');
+        const socialSection = document.createElement('div');
+        socialSection.id = 'social-hub-app';
+        socialSection.className = 'app-section';
+        socialSection.innerHTML = `
+            <h3>🔗 Matrix Social Links Hub & Sharing Dock</h3>
+            <div class="grid-layout">
+                <div class="data-card">
+                    <h4>Configure Shareable Profiles</h4>
+                    <label style="margin-top:10px; display:block;">Select Platform Network:</label>
+                    <select id="soc-platform-select">
+                        <option value="🌐 Personal Website">Personal Portfolio / Website</option>
+                        <option value="📘 Facebook Profile">Facebook</option>
+                        <option value="📸 Instagram Handle">Instagram</option>
+                        <option value="📺 YouTube Channel">YouTube Channel</option>
+                        <option value="🐦 X / Twitter Feed">X / Twitter</option>
+                    </select>
+                    <label style="display:block;">Paste Target Profile Link URL:</label>
+                    <input type="text" id="soc-url-input" placeholder="https://yourlink.com">
+                    <button class="btn" style="width:100%; margin-top:10px; justify-content:center;" onclick="deploySocialLinkNode()">Arm Sharing Card</button>
+                </div>
+                <div class="data-card" style="display:flex; flex-direction:column;">
+                    <h4>Your Shareable Link-in-Bio Stream</h4>
+                    <div id="social-link-stream-vault" style="margin-top:15px; display:flex; flex-direction:column; gap:10px; flex:1;">
+                        <!-- Shareable social rows loop here dynamically -->
+                    </div>
+                </div>
+            </div>
+        `;
+        workspace.appendChild(socialSection);
+        renderSocialLinkStream();
+    });
+
+    // SOCIAL DEPLOYMENT MANAGEMENT ENGINE
+    let savedSocials = JSON.parse(localStorage.getItem('core_social_links')) || [
+        { platform: "📘 Facebook Profile", url: "https://facebook.com" },
+        { platform: "📸 Instagram Handle", url: "https://instagram.com" }
+    ];
+
+    function renderSocialLinkStream() {
+        const streamBox = document.getElementById('social-link-stream-vault');
+        if(!streamBox) return;
+        streamBox.innerHTML = '';
+        
+        savedSocials.forEach((item, index) => {
+            streamBox.innerHTML += `
+                <div style="background:rgba(0,112,243,0.1); border:1px solid var(--accent); padding:15px; border-radius:8px; display:flex; justify-content:between; align-items:center; gap:15px;">
+                    <div style="flex:1;">
+                        <span style="font-weight:bold; color:var(--accent); font-size:0.85rem; display:block;">${item.platform}</span>
+                        <a href="${item.url}" target="_blank" style="color:#fff; font-size:0.95rem; text-decoration:none; word-break:break-all; font-family:monospace;">${item.url}</a>
+                    </div>
+                    <div class="btn-row" style="margin:0;">
+                        <button class="btn" style="padding:6px 12px; font-size:0.8rem;" onclick="navigator.clipboard.writeText('${item.url}'); alert('Link copied to dashboard clip!');">Copy</button>
+                        <button class="btn btn-danger" style="padding:6px 12px; font-size:0.8rem;" onclick="deleteSocialLinkNode(${index})">Delete</button>
+                    </div>
+                </div>`;
+        });
+        localStorage.setItem('core_social_links', JSON.stringify(savedSocials));
+    }
+
+    function deploySocialLinkNode() {
+        const platform = document.getElementById('soc-platform-select').value;
+        const url = document.getElementById('soc-url-input').value.trim();
+        if(!url) return;
+        
+        savedSocials.push({ platform, url });
+        document.getElementById('soc-url-input').value = '';
+        renderSocialLinkStream();
+    }
+
+    function deleteSocialLinkNode(idx) {
+        savedSocials.splice(idx, 1);
+        renderSocialLinkStream();
+    }
+</script>
