@@ -1,204 +1,53 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Universal Workspace V-1 & V-2</title>
-    <link rel="stylesheet" href="styles.css">
+    <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Workspace V1-V2</title><link rel="stylesheet" href="styles.css">
     <script src="https://jsdelivr.net"></script>
-    <script src="https://jsdelivr.net"></script>
-    <script src="https://cloudflare.com"></script>
 </head>
 <body>
     <div class="app-container">
         <nav class="sidebar">
-            <h2>Workspace V-1</h2>
+            <h2>V-1 Tools</h2>
             <ul>
-                <li><a href="#" class="active" data-target="expense-tracker">Expense Tracker</a></li>
-                <li><a href="#" data-target="snippets">Snippets Manager</a></li>
-                <li><a href="#" data-target="ambient-sounds">Ambient Sounds</a></li>
-                <li><a href="#" data-target="email-drafter">Smart Email Drafter</a></li>
-                <li><a href="#" data-target="invoice-gen">Invoice Generator</a></li>
+                <li><a href="#" class="active" data-target="exp">Expense Tracker</a></li>
+                <li><a href="#" data-target="snip">Snippets</a></li>
             </ul>
-            <h2 style="margin-top: 20px; border-top: 1px solid #3b82f6; padding-top: 10px;">Developer V-2</h2>
+            <h2>V-2 Dev</h2>
             <ul>
-                <li><a href="#" data-target="api-tester">API Tester</a></li>
-                <li><a href="#" data-target="json-viewer">JSON Viewer</a></li>
-                <li><a href="#" data-target="regex-tester">Regex Tester</a></li>
+                <li><a href="#" data-target="json">JSON Viewer</a></li>
+                <li><a href="#" data-target="regex">Regex Tester</a></li>
             </ul>
         </nav>
         <main class="content-area">
-            <!-- Expense Tracker Panel -->
-            <section id="expense-tracker" class="panel active">
-                <header class="panel-header"><h1>Expense & Budget Tracker</h1></header>
-                <div class="tracker-grid">
-                    <div class="card form-card">
-                        <h3>Add Transaction</h3>
-                        <form id="expense-form">
-                            <input type="text" id="exp-desc" placeholder="Description (e.g., Coffee, Groceries)" required>
-                            <div class="row">
-                                <input type="number" id="exp-amount" placeholder="Amount" step="0.01" required>
-                                <select id="exp-currency">
-                                    <option value="USD">USD ($)</option>
-                                    <option value="EUR">EUR (€)</option>
-                                    <option value="GBP">GBP (£)</option>
-                                    <option value="PHP">PHP (₱)</option>
-                                </select>
-                            </div>
-                            <button type="submit" class="btn-primary">Add Entry</button>
-                        </form>
-                    </div>
-                    <div class="card chart-card">
-                        <h3>Budget Breakdown</h3>
-                        <div class="chart-container" style="position: relative; height:200px;">
-                            <canvas id="budgetChart"></canvas>
-                        </div>
-                    </div>
-                    <div class="card list-card">
-                        <div class="header-row" style="display: flex; justify-content: space-between; align-items: center;">
-                            <h3>Recent Transactions</h3>
-                            <button class="btn-primary" onclick="exportToExcel()" style="width: auto; padding: 6px 12px; font-size: 14px;">Export to Excel (.xlsx)</button>
-                        </div>
-                        <ul id="transaction-list" class="data-list"></ul>
-                    </div>
-                </div>
+            <section id="exp" class="panel active">
+                <h3>Expense Tracker</h3>
+                <form id="exp-form">
+                    <input type="text" id="desc" placeholder="Desc" required>
+                    <input type="number" id="amt" placeholder="Amt" required>
+                    <button type="submit">Add</button>
+                </form>
+                <canvas id="chart" style="max-height:150px;"></canvas>
+                <ul id="exp-list"></ul>
             </section>
-
-                        <!-- Clipboard Snippets Panel -->
-            <section id="snippets" class="panel">
-                <header class="panel-header"><h1>Quick Snippets & Clipboard Manager</h1></header>
-                <div class="tracker-grid">
-                    <div class="card form-card">
-                        <h3>Create New Snippet Template</h3>
-                        <form id="snippet-form">
-                            <input type="text" id="snip-title" placeholder="Snippet Title" required>
-                            <textarea id="snip-text" placeholder="Paste text here..." rows="5" style="width: 100%; padding: 12px; margin-top: 10px; border-radius: 6px; border: 1px solid #ddd;" required></textarea>
-                            <button type="submit" class="btn-primary" style="margin-top: 10px;">Save Snippet</button>
-                        </form>
-                    </div>
-                    <div id="snippet-list" style="display: grid; gap: 20px; grid-column: span 2;"></div>
-                </div>
+            <section id="snip" class="panel">
+                <h3>Snippets</h3>
+                <textarea id="snip-in" placeholder="Text..."></textarea>
+                <button onclick="saveSnip()">Save</button>
+                <div id="snip-list"></div>
             </section>
-
-            <!-- Ambient Background Sound Machine Panel -->
-            <section id="ambient-sounds" class="panel">
-                <header class="panel-header"><h1>Ambient Background Sound Machine</h1></header>
-                <div class="tracker-grid">
-                    <div class="card sound-card">
-                        <h3>White Noise Audio Mixer</h3>
-                        <div class="sound-control-row"><label>🌧️ Rain Environment</label><input type="range" min="0" max="1" step="0.1" value="0" id="vol-rain" oninput="changeVolume('rain', this.value)"></div>
-                        <div class="sound-control-row"><label>☕ Cafe Ambience</label><input type="range" min="0" max="1" step="0.1" value="0" id="vol-cafe" oninput="changeVolume('cafe', this.value)"></div>
-                        <div class="sound-control-row"><label>🔥 Campfire Crackle</label><input type="range" min="0" max="1" step="0.1" value="0" id="vol-fire" oninput="changeVolume('fire', this.value)"></div>
-                    </div>
-                </div>
+            <section id="json" class="panel">
+                <h3>JSON Viewer</h3>
+                <textarea id="json-in" placeholder="Raw JSON"></textarea>
+                <button onclick="viewJSON()">Format</button>
+                <pre id="json-out"></pre>
             </section>
-
-            <!-- Smart Email & Reply Drafter Panel -->
-            <section id="email-drafter" class="panel">
-                <header class="panel-header"><h1>Smart Email & Reply Drafter</h1></header>
-                <div class="tracker-grid">
-                    <div class="card form-card">
-                        <h3>Draft Settings</h3>
-                        <div class="row">
-                            <select id="email-tone">
-                                <option value="professional">Professional / Formal</option>
-                                <option value="casual">Casual / Friendly</option>
-                                <option value="urgent">Urgent / Follow-Up</option>
-                            </select>
-                        </div>
-                        <textarea id="email-prompt" placeholder="What is this email about?" rows="4" style="width:100%; padding:12px; border-radius:6px; border:1px solid #ddd;" required></textarea>
-                        <button class="btn-primary" onclick="generateEmailDraft()" style="margin-top:10px;">Compile Draft Text</button>
-                    </div>
-                    <div class="card display-card">
-                        <h3>Generated Text Output</h3>
-                        <textarea id="email-output" readonly rows="8" style="width:100%; padding:12px; margin-top:10px; border-radius:6px; background:#f8fafc; border:1px solid #e2e8f0; font-family:monospace; resize:none;"></textarea>
-                        <button class="btn-primary" onclick="copyEmailToClipboard()" style="margin-top:10px; background:#10b981;">Copy Draft</button>
-                    </div>
-                </div>
-            </section>
-
-            <!-- Invoice & Quote Generator Panel -->
-            <section id="invoice-gen" class="panel">
-                <header class="panel-header"><h1>Invoice & Quote Generator</h1></header>
-                <div class="tracker-grid">
-                    <div class="card form-card">
-                        <h3>Invoice Particulars</h3>
-                        <input type="text" id="inv-client" placeholder="Client Name / Company" required style="margin-bottom:10px;">
-                        <input type="text" id="inv-service" placeholder="Service Provided" required style="margin-bottom:10px;">
-                        <div class="row">
-                            <input type="number" id="inv-cost" placeholder="Total Cost Basis Amount" required>
-                            <select id="inv-currency">
-                                <option value="$">USD ($)</option>
-                                <option value="€">EUR (€)</option>
-                                <option value="₱">PHP (₱)</option>
-                            </select>
-                        </div>
-                        <button class="btn-primary" onclick="previewInvoice()" style="margin-top:10px;">Generate Preview</button>
-                    </div>
-                    <div class="card display-card">
-                        <h3>Document Print Preview</h3>
-                        <div id="invoice-preview-box" style="padding:20px; border:1px dashed #cbd5e1; background:#fff; min-height:150px; border-radius:6px; margin:10px 0;">
-                            <p style="color:#94a3b8; text-align:center;">No active invoice generated yet.</p>
-                        </div>
-                        <div class="row">
-                            <button class="btn-primary" onclick="exportInvoicePDF()" style="background:#ef4444;">Download vector PDF</button>
-                            <button class="btn-primary" onclick="exportInvoiceWord()" style="background:#3b82f6;">Download Word (.doc)</button>
-                        </div>
-                    </div>
-                </div>
-            </section>
-
-            <!-- API Tester Panel -->
-            <section id="api-tester" class="panel">
-                <header class="panel-header"><h1>API HTTP Request Tester</h1></header>
-                <div class="tracker-grid">
-                    <div class="card form-card">
-                        <h3>Configure Endpoint Request</h3>
-                        <div class="row">
-                            <select id="api-method" style="max-width:30%;"><option value="GET">GET</option><option value="POST">POST</option></select>
-                            <input type="text" id="api-url" placeholder="https://github.com" style="flex:1;">
-                        </div>
-                        <button class="btn-primary" onclick="runApiTest()">Send Network Request</button>
-                    </div>
-                    <div class="card display-card">
-                        <h3>API Response Output Data</h3>
-                        <textarea id="api-response" readonly rows="8" style="width:100%; margin-top:10px; font-family:monospace; background:#f8fafc; padding:12px; border-radius:6px; border:1px solid #ddd; resize:none;"></textarea>
-                    </div>
-                </div>
-            </section>
-
-            <!-- JSON Viewer Panel -->
-            <section id="json-viewer" class="panel">
-                <header class="panel-header"><h1>JSON String Formatter & Viewer</h1></header>
-                <div class="tracker-grid">
-                    <div class="card form-card">
-                        <h3>Input Raw Minified Data String</h3>
-                        <textarea id="json-input" placeholder="Paste your raw JSON text data here..." rows="8" style="width:100%; padding:12px; border-radius:6px; border:1px solid #ddd;"></textarea>
-                        <button class="btn-primary" onclick="formatJSON()" style="margin-top:10px;">Format JSON Code</button>
-                    </div>
-                    <div class="card display-card">
-                        <h3>Prettified Syntactical Tree View</h3>
-                        <textarea id="json-output" readonly rows="8" style="width:100%; font-family:monospace; background:#f8fafc; padding:12px; border-radius:6px; border:1px solid #ddd; resize:none;"></textarea>
-                    </div>
-                </div>
-            </section>
-
-            <!-- Regex Tester Panel -->
-            <section id="regex-tester" class="panel">
-                <header class="panel-header"><h1>Client-Side Regex Match Validator</h1></header>
-                <div class="tracker-grid">
-                    <div class="card form-card">
-                        <h3>Expression & Flags Input</h3>
-                        <input type="text" id="regex-pattern" placeholder="Enter Pattern (e.g., [a-z]+)" style="margin-bottom:10px; display:block; width:100%;">
-                        <input type="text" id="regex-flags" placeholder="Flags (e.g., g, i)" style="margin-bottom:10px; display:block; width:100%;">
-                        <textarea id="regex-text" placeholder="Type test string data lines here..." rows="4" style="width:100%; padding:12px; border-radius:6px; border:1px solid #ddd;"></textarea>
-                        <button class="btn-primary" onclick="testRegex()" style="margin-top:10px;">Verify Rule Match</button>
-                    </div>
-                    <div class="card display-card">
-                        <h3>Regex Engine Processing Status</h3>
-                        <div id="regex-status" style="font-size:18px; font-weight:bold; margin-top:20px; padding:15px; border-radius:6px; background:#f8fafc; border:1px solid #e2e8f0; text-align:center;">Awaiting validation parameters input...</div>
-                    </div>
-                </div>
+            <section id="regex" class="panel">
+                <h3>Regex Tester</h3>
+                <input type="text" id="rx-pat" placeholder="Pattern">
+                <input type="text" id="rx-str" placeholder="String">
+                <button onclick="testRx()">Test</button>
+                <p id="rx-out"></p>
             </section>
         </main>
     </div>
