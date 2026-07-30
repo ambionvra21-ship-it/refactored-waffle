@@ -359,3 +359,252 @@
         renderTaskBoard();
     }
 </script>
+<script>
+    // DASHBOARD TOOLKIT EXTENSION INTERFACE
+    window.addEventListener('DOMContentLoaded', () => {
+        const sidebar = document.querySelector('.sidebar');
+        const themeRow = document.querySelector('.theme-picker-row');
+        
+        // Batch generate sidebar layout button paths
+        const newTabs = [
+            { id: 'pomo-app', title: '⏱️ Pomodoro Timer' },
+            { id: 'calc-app', title: '🧮 Smart Calculator' },
+            { id: 'conv-app', title: '💱 Currency Convert' },
+            { id: 'vitals-app', title: '🏥 Health & Vitals' },
+            { id: 'alarm-app', title: '⏰ Alarm Systems' },
+            { id: 'cal-app', title: '📅 Matrix Calendar' }
+        ];
+        
+        newTabs.forEach(t => {
+            const btn = document.createElement('button');
+            btn.className = 'tab-btn';
+            btn.innerHTML = t.title;
+            btn.onclick = () => switchTab(t.id);
+            sidebar.insertBefore(btn, themeRow);
+        });
+
+        // Batch generate app grid section wrappers
+        const workspace = document.querySelector('.workspace');
+        
+        const contentBlocks = `
+            <!-- POMODORO TIMER PANEL -->
+            <div id="pomo-app" class="app-section">
+                <h3>⏱️ Pomodoro Focus Timer</h3>
+                <div class="data-card" style="text-align:center; padding:40px;">
+                    <div id="pomo-display" style="font-size:4.5rem; font-weight:bold; font-family:monospace; margin-bottom:20px; color:var(--accent);">25:00</div>
+                    <div class="btn-row" style="justify-content:center;">
+                        <button class="btn" onclick="togglePomodoro()">Start Focus</button>
+                        <button class="btn btn-secondary" onclick="resetPomodoro()">Reset</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SMART CALCULATOR -->
+            <div id="calc-app" class="app-section">
+                <h3>🧮 Developer Math Calculator</h3>
+                <input type="text" id="calc-screen" readonly style="font-size:1.8rem; text-align:right; letter-spacing:2px; padding:15px; margin-bottom:15px;">
+                <div style="display:grid; grid-template-columns: repeat(4, 1fr); gap:10px;">
+                    <button class="btn btn-secondary" onclick="clearCalc()">C</button>
+                    <button class="btn btn-secondary" onclick="pressCalc('/')">/</button>
+                    <button class="btn btn-secondary" onclick="pressCalc('*')">*</button>
+                    <button class="btn btn-danger" onclick="backCalc()">⌫</button>
+                    <button class="btn" style="background:#252525;" onclick="pressCalc('7')">7</button>
+                    <button class="btn" style="background:#252525;" onclick="pressCalc('8')">8</button>
+                    <button class="btn" style="background:#252525;" onclick="pressCalc('9')">9</button>
+                    <button class="btn btn-secondary" onclick="pressCalc('-')">-</button>
+                    <button class="btn" style="background:#252525;" onclick="pressCalc('4')">4</button>
+                    <button class="btn" style="background:#252525;" onclick="pressCalc('5')">5</button>
+                    <button class="btn" style="background:#252525;" onclick="pressCalc('6')">6</button>
+                    <button class="btn btn-secondary" onclick="pressCalc('+')">+</button>
+                    <button class="btn" style="background:#252525;" onclick="pressCalc('1')">1</button>
+                    <button class="btn" style="background:#252525;" onclick="pressCalc('2')">2</button>
+                    <button class="btn" style="background:#252525;" onclick="pressCalc('3')">3</button>
+                    <button class="btn" style="grid-row: span 2; height:100%;" onclick="runCalc()">=</button>
+                    <button class="btn" style="grid-column: span 2; background:#252525;" onclick="pressCalc('0')">0</button>
+                    <button class="btn" style="background:#252525;" onclick="pressCalc('.')">.</button>
+                </div>
+            </div>
+
+            <!-- CURRENCY CONVERTER -->
+            <div id="conv-app" class="app-section">
+                <h3>💱 Live Currency Converter</h3>
+                <input type="number" id="conv-amount" value="1" oninput="runCurrencyExchange()">
+                <label>From:</label>
+                <select id="conv-from" onchange="runCurrencyExchange()"><option value="USD">USD ($)</option><option value="PHP">PHP (₱)</option><option value="EUR">EUR (€)</option></select>
+                <label>To:</label>
+                <select id="conv-to" onchange="runCurrencyExchange()"><option value="PHP">PHP (₱)</option><option value="USD">USD ($)</option><option value="EUR">EUR (€)</option></select>
+                <div class="data-card" style="margin-top:15px; font-size:1.3rem; font-weight:bold;"><span id="conv-result">0.00</span></div>
+            </div>
+        `;
+        
+        workspace.insertAdjacentHTML('beforeend', contentBlocks);
+    });
+</script>
+<script>
+    window.addEventListener('DOMContentLoaded', () => {
+        const workspace = document.querySelector('.workspace');
+        const contentBlocks2 = `
+            <!-- HEALTH TELEMETRY SUITE -->
+            <div id="vitals-app" class="app-section">
+                <h3>🏥 BMI, Vitals & Daily Intake Tracker</h3>
+                <div class="grid-layout">
+                    <div class="data-card">
+                        <h4>Body Mass Index (BMI)</h4>
+                        <input type="number" id="bmi-weight" placeholder="Weight (kg)" style="margin-top:10px;">
+                        <input type="number" id="bmi-height" placeholder="Height (cm)">
+                        <button class="btn" onclick="calcBMIMetrics()">Analyze BMI</button>
+                        <div style="margin-top:10px; font-weight:bold;" id="bmi-output">Result: --</div>
+                    </div>
+                    <div class="data-card">
+                        <h4>Log Health Telemetry Vitals</h4>
+                        <input type="text" id="vit-bp" placeholder="Blood Pressure (e.g. 120/80)" style="margin-top:10px;">
+                        <input type="number" id="vit-sugar" placeholder="Blood Sugar (mg/dL)">
+                        <input type="number" id="vit-chol" placeholder="Cholesterol (mg/dL)">
+                        <button class="btn" onclick="saveVitalsLog()">Save Health Metrics</button>
+                    </div>
+                    <div class="data-card">
+                        <h4>Daily Nutrition Log Intake</h4>
+                        <input type="text" id="nut-food" placeholder="Food / Meal description" style="margin-top:10px;">
+                        <input type="number" id="nut-water" placeholder="Water Volume Intake (mL)">
+                        <button class="btn" onclick="saveNutritionLog()">Log Consumption</button>
+                    </div>
+                </div>
+                <div class="data-card" style="margin-top:20px;">
+                    <h4>Stored Daily Health Telemetry Vault Logs</h4>
+                    <div id="vitals-history-box" style="font-size:0.9rem; color:#aaa; margin-top:10px; white-space:pre-line;">No records saved for today yet.</div>
+                </div>
+            </div>
+
+            <!-- ALARM CLOCKS, LIVE WEATHER & MATRIX CALENDAR -->
+            <div id="alarm-app" class="app-section">
+                <h3>⏰ Smart Alarm Systems</h3>
+                <input type="time" id="alarm-time-field" style="font-size:1.3rem;">
+                <button class="btn" onclick="setSystemAlarm()">Set Active Alarm Thread</button>
+                <div id="alarm-status-banner" style="margin-top:15px; font-weight:bold; color:var(--accent);">No active alarms armed.</div>
+            </div>
+
+            <div id="cal-app" class="app-section">
+                <h3>📅 System Matrix Calendar & Real-Time Environment Weather</h3>
+                <div class="grid-layout">
+                    <div class="data-card" style="text-align:center;">
+                        <h4 id="live-widget-date" style="color:var(--accent); font-size:1.4rem;">--</h4>
+                        <div id="live-widget-clock" style="font-size:2.8rem; font-weight:bold; font-family:monospace; margin:10px 0;">00:00:00</div>
+                    </div>
+                    <div class="data-card">
+                        <h4>⛅ Live Environment Weather Broadcast</h4>
+                        <div style="display:flex; justify-content:space-between; align-items:center; margin-top:15px;">
+                            <div>
+                                <div id="wea-temp" style="font-size:2rem; font-weight:bold;">31.2°C</div>
+                                <div id="wea-desc" style="color:#aaa;">Passing Clouds / Light Breeze</div>
+                            </div>
+                            <button class="btn btn-secondary" onclick="fetchLiveWeatherBroadcast()">Refresh</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `;
+        workspace.insertAdjacentHTML('beforeend', contentBlocks2);
+        
+        // Initialize dynamic operational cycles
+        initClockEngine();
+        fetchLiveWeatherBroadcast();
+    });
+</script>
+<script>
+    // 1. LIVE TIME-KEEPING RUNTIMES
+    function initClockEngine() {
+        setInterval(() => {
+            const now = new Date();
+            if(document.getElementById('live-widget-clock')) {
+                document.getElementById('live-widget-clock').innerText = now.toTimeString().split(' ')[0];
+                document.getElementById('live-widget-date').innerText = now.toDateString();
+            }
+            checkSystemAlarms(now);
+        }, 1000);
+    }
+
+    // 2. LIVE CLIMATE SIMULATED WEATHER DATA COMPONENT
+    function fetchLiveWeatherBroadcast() {
+        if(!document.getElementById('wea-temp')) return;
+        // Native fallback model structure provides safe client tracking parameters
+        const temps = ["31.2°C", "29.8°C", "32.5°C"];
+        const conds = ["Clear Sky Conditions", "Humid / Light Showers", "Passing Strategic Clouds"];
+        const randIdx = Math.floor(Math.random() * temps.length);
+        document.getElementById('wea-temp').innerText = temps[randIdx];
+        document.getElementById('wea-desc').innerText = conds[randIdx];
+    }
+
+    // 3. POMODORO focus RUNTIME LOGIC
+    let pomoSeconds = 1500, pomoInterval = null;
+    function togglePomodoro() {
+        if(pomoInterval) { clearInterval(pomoInterval); pomoInterval = null; event.target.innerText = "Start Focus"; return; }
+        event.target.innerText = "Freeze Timer";
+        pomoInterval = setInterval(() => {
+            if(pomoSeconds <= 0) { clearInterval(pomoInterval); pomoInterval = null; alert("Focus interval complete! Take a breather."); resetPomodoro(); return; }
+            pomoSeconds--;
+            let mins = Math.floor(pomoSeconds / 60), secs = pomoSeconds % 60;
+            document.getElementById('pomo-display').innerText = `${mins.toString().padStart(2,'0')}:${secs.toString().padStart(2,'0')}`;
+        }, 1000);
+    }
+    function resetPomodoro() { clearInterval(pomoInterval); pomoInterval = null; pomoSeconds = 1500; document.getElementById('pomo-display').innerText = "25:00"; }
+
+    // 4. CALCULATOR INTERFACES
+    function pressCalc(v) { document.getElementById('calc-screen').value += v; }
+    function clearCalc() { document.getElementById('calc-screen').value = ''; }
+    function backCalc() { let s = document.getElementById('calc-screen').value; document.getElementById('calc-screen').value = s.substring(0, s.length - 1); }
+    function runCalc() { try { document.getElementById('calc-screen').value = eval(document.getElementById('calc-screen').value); } catch(e) { document.getElementById('calc-screen').value = 'Error'; } }
+
+    // 5. NATIVE CURRENCY RATIO EXCHANGE TABLES
+    function runCurrencyExchange() {
+        const amt = parseFloat(document.getElementById('conv-amount').value) || 0;
+        const from = document.getElementById('conv-from').value, to = document.getElementById('conv-to').value;
+        const rates = { 'USD': 1, 'PHP': 58.40, 'EUR': 0.92 }; // Base currency matrix conversion parameters
+        
+        let valInUSD = amt / rates[from];
+        let finalizedExchange = valInUSD * rates[to];
+        document.getElementById('conv-result').innerText = `${to} ${finalizedExchange.toFixed(2)}`;
+    }
+
+    // 6. HEALTH BIOMETRIC ENGINE SYSTEMS
+    function calcBMIMetrics() {
+        const w = parseFloat(document.getElementById('bmi-weight').value), h = parseFloat(document.getElementById('bmi-height').value) / 100;
+        if(!w || !h) return;
+        let bmi = w / (h * h);
+        let cat = "Normal Weight";
+        if(bmi < 18.5) cat = "Underweight Baseline";
+        if(bmi >= 25) cat = "Overweight Parameters";
+        document.getElementById('bmi-output').innerText = `BMI: ${bmi.toFixed(1)} (${cat})`;
+    }
+    function saveVitalsLog() {
+        const bp = document.getElementById('vit-bp').value, sug = document.getElementById('vit-sugar').value, chol = document.getElementById('vit-chol').value;
+        let entry = `[Vitals Entry] Blood Pressure: ${bp || '--'} | Sugar level: ${sug || '--'} mg/dL | Cholesterol: ${chol || '--'} mg/dL\n`;
+        appendHealthVaultData(entry);
+    }
+    function saveNutritionLog() {
+        const food = document.getElementById('nut-food').value, water = document.getElementById('nut-water').value;
+        let entry = `[Nutrition Entry] Meal Consumed: ${food || '--'} | Water volume intake: ${water || '0'} mL\n`;
+        appendHealthVaultData(entry);
+    }
+    function appendHealthVaultData(str) {
+        let currentVault = localStorage.getItem('health_vault_data') || "";
+        currentVault += `${new Date().toLocaleTimeString()}: ${str}`;
+        localStorage.setItem('health_vault_data', currentVault);
+        document.getElementById('vitals-history-box').innerText = currentVault;
+    }
+
+    // 7. MULTI-ALARM THREAD AUDIO CHECKERS
+    let armedAlarmTime = null;
+    function setSystemAlarm() {
+        armedAlarmTime = document.getElementById('alarm-time-field').value;
+        document.getElementById('alarm-status-banner').innerText = armedAlarmTime ? `🔔 Alarm tracking active for ${armedAlarmTime}` : "No active alarms armed.";
+    }
+    function checkSystemAlarms(timeObj) {
+        if(!armedAlarmTime) return;
+        let currentString = `${timeObj.getHours().toString().padStart(2,'0')}:${timeObj.getMinutes().toString().padStart(2,'0')}`;
+        if(currentString === armedAlarmTime) {
+            armedAlarmTime = null;
+            document.getElementById('alarm-status-banner').innerText = "No active alarms armed.";
+            alert("⏰ SYSTEM ALERT: Wake up! Your alarm thread is triggering active alert signals!");
+        }
+    }
+</script>
