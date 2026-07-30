@@ -535,7 +535,7 @@ if len(matches) > 1:
 else:
     print("Direct section tag match hidden. Running alternative structural grid cleanup routine...")
     # Fallback cleanup to clear secondary identical layout components cleanly
-    split_marker = '<div id="expense-app" class="app-section active">'
+    split_marker = ''
     parts = code.split(split_marker)
     if len(parts) > 2:
         # Re-stitch by discarding the middle redundant block
